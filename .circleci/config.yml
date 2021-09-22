@@ -145,12 +145,12 @@ jobs:
 #      - run:
 #          name: Install dependencies
 #          command: |
-            # Your code here
-            exit 1
+#            # Your code here
+#            exit 1
 #      - run:
 #          name: Configure server
 #          command: |
-            # Your code here
+#           # Your code here
 #            exit 1
       # Here's where you will add some code to rollback on failure      
 
