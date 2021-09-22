@@ -109,8 +109,8 @@ jobs:
 #      - run:
 #          name: Ensure back-end infrastructure exists
 #          command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/backend.yml \
+#            aws cloudformation deploy \
+#              --template-file .circleci/files/backend.yml \
               #--tags project=your-tag \
               # --stack-name "your back-end stack name with workflow id" \
               # --parameter-overrides ID="your workflow id"  
@@ -128,11 +128,11 @@ jobs:
 #          name: Add back-end ip to ansible inventory
 #          command: |
             # Your code here
-            exit 1
+#            exit 1
 #      - persist_to_workspace:
 #          root: ~/
 #          paths:
-            - project/.circleci/ansible/inventory.txt
+#            - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure      
 
 #  configure-infrastructure:
@@ -151,7 +151,7 @@ jobs:
 #          name: Configure server
 #          command: |
             # Your code here
-            exit 1
+#            exit 1
       # Here's where you will add some code to rollback on failure      
 
 #  run-migrations:
@@ -163,12 +163,12 @@ jobs:
 #          name: Run migrations
 #          command: |
             # Your code here
-            exit 1
+#            exit 1
 #      - run:
 #          name: Send migration results to memstash
 #          command: |
             # Your code here
-            exit 1
+#            exit 1
      # Here's where you will add some code to rollback on failure      
 
 #  deploy-frontend:
@@ -185,7 +185,7 @@ jobs:
 #          command: |
             # your code here
 #           export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
+#            echo "${API_URL}"
 #      - run:
 #          name: Deploy frontend objects
 #          command: |
@@ -256,15 +256,15 @@ jobs:
 #          name: Get old stack workflow id
 #         command: |
             # your code here
-            export OldWorkflowID="the id here"
-            export STACKS=[] #put the list of stacks here
+#            export OldWorkflowID="the id here"
+#            export STACKS=[] #put the list of stacks here
 #      - run:
 #          name: Remove old stacks and files
 #          command: |
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-            then
+#            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+#            then
               # your code here
-            fi
+#            fi
             
 
 workflows:
