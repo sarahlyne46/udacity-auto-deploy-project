@@ -29,7 +29,7 @@ Resources:
       SecurityGroups:
         - Ref: InstanceSecurityGroup
       KeyName: udacity # If you use another key pair name, you should change this value to match.
-      ImageId: ami-0194c3e07668a7e36    # Ubuntu 20.04 in region eu-west-2
+      ImageId: ami-09e67e426f25ce0d7    # Ubuntu 20.04 in region us-east-1
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}
