@@ -220,9 +220,10 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
  #           exit 1
  
-            ansible-playbook \
-              -i .circleci/ansible/inventory.txt \
-              .circleci/ansible/configure-server.yml
+          ansible-playbook \
+            -i .circleci/ansible/inventory.txt \
+            .circleci/ansible/configure-server.yml
+
       - destroy-environment:         
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
