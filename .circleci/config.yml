@@ -151,10 +151,12 @@ jobs:
             BACKEND_IP=$(aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --filters "Name=tag:project,Values=udapeople" \
-              --output text)
+              --output text >> .circleci/ansible/inventory.txt)
               echo "http://$BACKEND_IP:3030" >> .circleci/outputs/urls.txt
               echo "[all]" >> .circleci/ansible/inventory.txt
               echo "$BACKEND_IP" >> .circleci/ansible/inventory.txt
+              
+              cat .circleci/outputs/urls.txt
  #             exit 1
       - run: yum -y install tar gzip
       - persist_to_workspace:
@@ -224,28 +226,6 @@ jobs:
 
       - destroy-environment:         
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-
-
-
-  configure-frontend-infrastructure:
-    docker:
-      - image: python:3.7-alpine3.11
-    steps:
-      - checkout
-      # Add ssh keys with fingerprint
-      # attach workspace
-      - run:
-          name: Install dependencies
-          command: |
-            # Your code here
-            exit 1
-      - run:
-          name: Configure server
-          command: |
-           # Your code here
-            exit 1
-      - destroy-environment:         
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
 
 #  run-migrations:
