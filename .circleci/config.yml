@@ -131,7 +131,7 @@ jobs:
              cd backend
              npm audit fix --audit-level=critical
 
-  deploy-backend-infrastructure:
+  deploy-backend-infrastructure: #split the deploy section
     docker:
       - image: amazon/aws-cli
     steps:
@@ -182,14 +182,14 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-      - destroy-environment:        # Here's where you will add some code to rollback on failure  
+      - destroy-environment:         
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
-#  configure-infrastructure:
+#  configure-backend-infrastructure:
 #    docker:
       # Docker image here that supports Ansible
 #    steps:
-      # Checkout code from git
+#      - checkout
       # Add ssh keys with fingerprint
       # attach workspace
 #      - run:
@@ -202,13 +202,37 @@ jobs:
 #          command: |
 #           # Your code here
 #            exit 1
-      # Here's where you will add some code to rollback on failure      
+#      - destroy-environment:         
+#          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+
+
+
+#  configure-frontend-infrastructure:
+#    docker:
+      # Docker image here that supports Ansible
+#    steps:
+#      - checkout
+      # Add ssh keys with fingerprint
+      # attach workspace
+#      - run:
+#          name: Install dependencies
+#          command: |
+#            # Your code here
+#            exit 1
+#      - run:
+#          name: Configure server
+#          command: |
+#           # Your code here
+#            exit 1
+#      - destroy-environment:         
+#          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+
 
 #  run-migrations:
 #    docker:
       # Docker image here that supports NodeJS
 #    steps:
-      # Checkout code from git
+#      - checkout
 #      - run:
 #          name: Run migrations
 #          command: |
@@ -219,13 +243,14 @@ jobs:
 #          command: |
             # Your code here
 #            exit 1
-     # Here's where you will add some code to rollback on failure      
+#      - destroy-environment:         
+#          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
 #  deploy-frontend:
 #    docker:
       # Docker image here that supports AWS CLI
 #    steps:
-      # Checkout code from git
+#      - checkout
 #      - run:
 #          name: Install dependencies
 #          command: |
@@ -240,13 +265,14 @@ jobs:
 #          name: Deploy frontend objects
 #          command: |
             # your code here
-      # Here's where you will add some code to rollback on failure      
+#      - destroy-environment:         
+#          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"    
                     
 #  deploy-backend:
 #    docker:
       # Docker image here that supports Ansible
 #    steps:
-      # Checkout code from git
+#      - checkout
       # Add ssh keys with fingerprint
       # attach workspace
 #      - run:
@@ -257,13 +283,14 @@ jobs:
 #          name: Deploy backend
 #          command: |
             # your code here
-      # Here's where you will add some code to rollback on failure  
+#      - destroy-environment:         
+#          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
 #  smoke-test:
 #    docker:
       # Lightweight Docker image 
 #    steps:
-      # Checkout code from git
+#      - checkout
 #      - run:
 #          name: Install dependencies
 #          command: |
@@ -280,13 +307,14 @@ jobs:
 #          name: Frontend smoke test.
 #          command: |
             # your code here
-      # Here's where you will add some code to rollback on failure  
+#      - destroy-environment:         
+#          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
 #  cloudfront-update:
 #    docker:
       # Docker image here that supports AWS CLI
 #    steps:
-      # Checkout code from git
+#      - checkout
 #      - run:
 #          name: Install dependencies
 #          command: |
@@ -295,13 +323,14 @@ jobs:
 #          name: Update cloudfront distribution
 #          command: |
             # your code here
-      # Here's where you will add some code to rollback on failure  
+#      - destroy-environment:         
+#          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
 #cleanup:
 #    docker:
       # Docker image here
 #    steps:
-      # Checkout code from git
+#      - checkout
 #      - run:
 #          name: Get old stack workflow id
 #         command: |
