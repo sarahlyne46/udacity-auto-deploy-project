@@ -331,12 +331,12 @@ workflows:
       - scan-frontend:
           requires: [build-frontend]
       - deploy-backend-infrastructure:
-          requires: [scan-backend]
+          requires: [test-backend, scan-backend]
           filters:
             branches:
               only: [master]
-       - deploy-frontend-infrastructure:
-          requires: [scan-frontend]
+      - deploy-frontend-infrastructure:
+          requires: [test-frontend, scan-frontend]
           filters:
             branches:
               only: [master]             
