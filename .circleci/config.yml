@@ -135,7 +135,7 @@ jobs:
              cd backend
              npm audit fix --audit-level=critical
 
-  deploy-infrastructure: 
+  deploy-infrastructure: # used Knowledge forum to get this working: https://knowledge.udacity.com/questions/428609
     docker:
       - image: amazon/aws-cli
     steps:
@@ -150,15 +150,15 @@ jobs:
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
-            BACKEND-URL=$(aws ec2 describe-instances \
+            URLS=$(aws ec2 describe-instances \
               --region us-east-1 \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text)
-              echo "BACKEND-URL=$BACKEND-URL"
+              echo "URLS=$URLS"
               echo "${CIRCLE_WORKFLOW_ID:0:7}"
               curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" \ 
-              --request PUT --data "" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7} 
+              --request PUT --data "URLS" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7} 
 
       - run:
           name: Ensure that the frontend infrastructure exists
