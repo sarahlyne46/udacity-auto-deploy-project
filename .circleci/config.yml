@@ -157,7 +157,8 @@ jobs:
               --output text)
               echo "BACKEND-URL=$BACKEND-URL"
               echo "${CIRCLE_WORKFLOW_ID:0:7}"
-              curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7} 
+              curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" \ 
+              --request PUT --data "" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7} 
 
       - run:
           name: Ensure that the frontend infrastructure exists
@@ -169,7 +170,8 @@ jobs:
               --tags project=udaPeople
               ARN=$(aws s3 ls | grep udapeople)
               echo "ARN=$ARN"
-              curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "$ARN" https://api.memstash.io/values/arn_${CIRCLE_WORKFLOW_ID:0:7}
+              curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT \ 
+              --data "$ARN" https://api.memstash.io/values/arn_${CIRCLE_WORKFLOW_ID:0:7}
  #     - persist_to_workspace:
  #         root: ~/
  #         paths:
