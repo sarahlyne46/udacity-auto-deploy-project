@@ -198,11 +198,10 @@ jobs:
           command: |
             cd .circleci/ansible
             echo "[web]" >> inventory.txt
-            URLS=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7})
+            URLS=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" \
+            --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7})
             echo "$URLS" >> inventory.txt
-#            echo "$URLS:3030" >> urls.txt
             cat inventory.txt
-            cat urls.txt
       - run:
           name: Configure server with ansible
           no_output_timeout: 30m
