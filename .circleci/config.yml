@@ -233,9 +233,13 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-#      - aws-cli/setup
       - attach_workspace:
           at: ~/project
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update tar gzip ansible nodejs npm curl
+            pip install awscli          
       - run:
           name: install npm
           command: |
@@ -270,8 +274,8 @@ jobs:
             https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
 #      - revert migrations
 #          workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"             
-#      - destroy-environment:         
-#          workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"  
+      - destroy-environment:         
+          workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"  
 
 
 #  deploy-frontend:
@@ -314,7 +318,27 @@ jobs:
 #      - destroy-environment:         
 #          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
-#  smoke-test:
+#  smoke-test-frontend:
+#    docker:
+      # Lightweight Docker image 
+#    steps:
+#      - checkout
+#      - run:
+#          name: Install dependencies
+#          command: |
+            # your code here
+#      - run:
+#          name: Get backend url
+#          command: |
+            # your code here
+#      - run:
+#          name: Frontend smoke test.
+#          command: |
+            # your code here
+#      - destroy-environment:         
+#          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+
+#  smoke-test-backend:
 #    docker:
       # Lightweight Docker image 
 #    steps:
@@ -331,12 +355,9 @@ jobs:
 #          name: Backend smoke test.
 #          command: |
             # your code here
-#      - run:
-#          name: Frontend smoke test.
-#          command: |
-            # your code here
 #      - destroy-environment:         
 #          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+
 
 #  cloudfront-update:
 #    docker:
@@ -378,33 +399,33 @@ workflows:
   default:
     jobs:
       - build-backend:
-          filters:
-            branches:
-              only: [master]      
+#         filters:
+#            branches:
+#              only: [master]      
       - build-frontend:
-          filters:
-            branches:
-              only: [master]      
+#          filters:
+#            branches:
+#              only: [master]      
       - test-frontend:
           requires: [build-frontend]
-          filters:
-            branches:
-              only: [master]
+#          filters:
+#            branches:
+#              only: [master]
       - test-backend:
           requires: [build-backend]
-          filters:
-            branches:
-              only: [master]
+#          filters:
+#            branches:
+#              only: [master]
       - scan-backend:
           requires: [build-backend]
-          filters:
-            branches:
-              only: [master]
+#          filters:
+#            branches:
+#              only: [master]
       - scan-frontend:
           requires: [build-frontend]
-          filters:
-            branches:
-              only: [master]
+#          filters:
+#            branches:
+#              only: [master]
       - deploy-infrastructure:
           requires: [test-backend, scan-backend, test-frontend, scan-frontend]
           filters:
@@ -424,8 +445,10 @@ workflows:
  #         requires: [run-migrations]
  #     - deploy-backend:
  #         requires: [run-migrations]
- #     - smoke-test:
- #         requires: [deploy-backend, deploy-frontend]
+ #     - smoke-test-backend:
+ #         requires: [deploy-backend]
+  #     - smoke-test-frontend:
+ #         requires: [deploy-frontend]
  #     - cloudfront-update:
  #         requires: [smoke-test]
  #     - cleanup:
