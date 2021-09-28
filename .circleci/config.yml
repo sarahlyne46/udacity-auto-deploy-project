@@ -17,6 +17,11 @@ commands:
           type: string
     steps:
       - run:
+          name: Install dependencies
+          command: |
+            apk add --update tar gzip ansible nodejs npm curl
+            pip install awscli
+      - run:
           name: Destroy environments
           when: on_fail
           command: |
@@ -190,7 +195,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update tar gzip ansible nodejs npm curl
+#            apk add --update tar gzip ansible nodejs npm curl
             pip install awscli
       - run:
           name: Set up inventory file
