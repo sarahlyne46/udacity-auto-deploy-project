@@ -156,13 +156,7 @@ jobs:
     steps:
       - checkout
       - run: yum -y install tar gzip unzip
-#      - aws-cli:
-#          steps:
-#          - install:
-#            disable-aws-pager: <<parameters.disable-aws-pager>>
-#            override-installed: <<parameters.override-installed>>
-#            version: <<parameters.version>>
-#          override-installed: false
+      - aws-cli/setup
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -241,9 +235,8 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - aws-cli/setup: 
-          - install:
-              override-installed: false
+      - run: yum -y install tar gzip unzip
+      - aws-cli/setup
       - run:
           name: install npm
           command: |
