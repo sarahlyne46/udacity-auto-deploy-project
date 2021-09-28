@@ -235,8 +235,8 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - run: yum -y install tar gzip unzip
-      - aws-cli/setup
+#      - run: yum -y install tar gzip unzip
+#      - aws-cli/setup
       - run:
           name: install npm
           command: |
