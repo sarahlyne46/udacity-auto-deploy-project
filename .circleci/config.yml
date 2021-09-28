@@ -153,15 +153,15 @@ jobs:
       - checkout
 #      - aws-cli/setup
       - run: yum -y install tar gzip
-      - attach_workspace:
-          at: ~/project
-      - add_ssh_keys:
-          fingerprints: ["35:4c:90:a3:89:25:77:28:63:78:e4:08:46:e4:1c:9b"]
+#      - attach_workspace:
+#          at: ~/project
+#      - add_ssh_keys:
+#          fingerprints: ["35:4c:90:a3:89:25:77:28:63:78:e4:08:46:e4:1c:9b"]
 #      - run:
 #          name: Install dependencies
 #          command: |
 #            apk add --updatensible nodejs npm curl
-            pip install awscli
+#            pip install awscli
       - run:
           name: Ensure back-end infrastructure exists
           command: |
