@@ -157,8 +157,7 @@ jobs:
       - checkout
       - run: yum -y install tar gzip unzip
       - aws-cli/setup: 
-          override-installed:
-            default: false
+          override-installed: false
       - run:
           name: Ensure back-end infrastructure exists
           command: |
