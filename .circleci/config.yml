@@ -241,10 +241,9 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - aws-cli: 
-          steps:
-            - install:
-                override-installed: false
+      - aws-cli/setup: 
+          - install:
+              override-installed: false
       - run:
           name: install npm
           command: |
