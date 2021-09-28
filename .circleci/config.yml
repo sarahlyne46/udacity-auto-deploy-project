@@ -160,7 +160,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --updatensible nodejs npm curl
+#            apk add --updatensible nodejs npm curl
             pip install awscli
       - run:
           name: Ensure back-end infrastructure exists
