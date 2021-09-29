@@ -20,15 +20,15 @@ commands:
         workflow-id:
           type: string
     steps:
-      - run:
-          name: install AWS-CLI
-          working_directory: ./backend
-          command: |
-            apk --no-cache add sudo
-            sudo apt-get update && sudo apt-get install -yy less
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
+#      - run:
+#          name: install AWS-CLI
+#          working_directory: ./backend
+#          command: |
+#            apk --no-cache add sudo
+#            sudo apt-get update && sudo apt-get install -yy less
+#            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+#            unzip awscliv2.zip
+#            sudo ./aws/install
       - run:
           name: Destroy environments
           when: on_fail
@@ -43,15 +43,15 @@ commands:
         workflow-id:
           type: string
     steps:
-      - run:
-          name: install AWS-CLI
-          working_directory: ./backend
-          command: |
-            apk --no-cache add sudo
-            sudo apt-get update && sudo apt-get install -yy less
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
+ #     - run:
+ #         name: install AWS-CLI
+ #         working_directory: ./backend
+ #         command: |
+ #           apk --no-cache add sudo
+ #           sudo apt-get update && sudo apt-get install -yy less
+ #           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+ #           unzip awscliv2.zip
+ #           sudo ./aws/install
       - run:
           name: Destroy S3 bucket
           when: on_fail
@@ -173,8 +173,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - run: yum -y install tar gzip unzip
-#      - aws-cli/setup
+      - run: yum -y install tar gzip
       - run:
           name: Ensure back-end infrastructure exists
           command: |
