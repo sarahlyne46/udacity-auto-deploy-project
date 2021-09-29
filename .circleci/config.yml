@@ -247,7 +247,7 @@ jobs:
           no_output_timeout: 10m
           command: |
             cd backend
-#            echo ENVIROMENT=production > "backend/.env"
+            echo ENVIROMENT=production
 #            echo TYPEORM_CONNECTION=postgres >> "backend/.env"
 #            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
 #            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
@@ -258,7 +258,7 @@ jobs:
 #            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
 #            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             #          
-            echo ENVIROMENT=production
+#            echo ENVIROMENT=production
             echo TYPEORM_MIGRATIONS_DIR=./src/migrations 
             echo TYPEORM_CONNECTION=postgres
             echo TYPEORM_HOST=udapeople1-prod.ce2purdfddqp.us-east-1.rds.amazonaws.com
