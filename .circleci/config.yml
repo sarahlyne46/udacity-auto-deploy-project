@@ -28,13 +28,13 @@ commands:
             sudo apt-get update && sudo apt-get install -yy less
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
-            run ./aws/install
+            sudo ./aws/install
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name udapeople-backend-prod-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
-            aws cloudformation delete-stack --stack-name udapeople-frontend-prod-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
+            aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
+            aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
           workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
   destroy-bucket:
@@ -47,6 +47,7 @@ commands:
           name: install AWS-CLI
           working_directory: ./backend
           command: |
+            apk --no-cache add sudo
             sudo apt-get update && sudo apt-get install -yy less
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
@@ -55,7 +56,7 @@ commands:
           name: Destroy S3 bucket
           when: on_fail
           command: |
-            aws s3 rm s3://udapeople-prod-${CIRCLE_WORKFLOW_ID:0:7}
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
           workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"           
           
   revert-migrations:
