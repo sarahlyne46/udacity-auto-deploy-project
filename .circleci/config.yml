@@ -349,9 +349,9 @@ jobs:
               -i .circleci/ansible/inventory.tx
               .circleci/ansible/deploy-backend.yml
       - destroy-environment:         
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
       - destroy-bucket:         
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}  
           
 
 #  smoke-test-frontend:
