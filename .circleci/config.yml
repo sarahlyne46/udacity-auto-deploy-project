@@ -252,6 +252,7 @@ jobs:
             cd backend
             npm install
             npm run build
+            npm run migrations:revert
             npm run migrations >> migration_output.log
             cat migration_output.log
             migration_success=$(cat migration_output.log | grep -c "has been executed successfully")
