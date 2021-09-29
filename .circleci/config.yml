@@ -24,9 +24,10 @@ commands:
           name: install AWS-CLI
           working_directory: ./backend
           command: |
+            sudo apt-get update && sudo apt-get install -yy less
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
-            sudo ./aws/install
+            run ./aws/install
       - run:
           name: Destroy environments
           when: on_fail
