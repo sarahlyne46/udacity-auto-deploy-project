@@ -295,17 +295,15 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - run:
-          name: "upgrade packages."
-          become: true
-          apt:
-            upgrade: "yes"
-      - run:      
-          name: "install dependencies."
-          become: true
-          apt:
-            name: ["nodejs", "npm"]
-            update_cache: yes      
+      - name: "upgrade packages."
+        become: true
+        apt:
+          upgrade: "yes"
+      - name: "install dependencies."
+        become: true
+        apt:
+          name: ["nodejs", "npm"]
+          update_cache: yes      
       - run:
           name: "Install dependencies 2"
           command: |
