@@ -296,11 +296,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install aws aws-cli
-          command: |
-            apt-get update
-            apt -y install awscli    
-      - run:
           name: Install dependencies
           command: |
             cd frontend
