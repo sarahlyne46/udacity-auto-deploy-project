@@ -285,8 +285,8 @@ jobs:
             sudo npm install
             apk add --update tar gzip ansible nodejs npm curl
             pip install awscli
-      - attach_workspace:
-          at: ~/              
+#      - attach_workspace:
+#          at: ~/              
       - run:
           name: Get backend url
           command: |
@@ -331,7 +331,7 @@ jobs:
           name: Deploy backend
           command: |
             cd /home
-            tar czf backend.tar.gz -P /home/circleci/project/backend
+            tar -C backend -czvf backend.tar.gz
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook \
               -i .circleci/ansible/inventory.tx
