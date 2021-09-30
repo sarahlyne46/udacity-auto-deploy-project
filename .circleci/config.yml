@@ -281,8 +281,8 @@ jobs:
           name: Install dependencies
           command: |
             cd frontend
-            sudo npm install webpack-dev-server -g
-            sudo npm install
+            npm install webpack-dev-server -g
+            npm install
             apk add --update tar gzip ansible nodejs npm curl
             pip install awscli
 #      - attach_workspace:
