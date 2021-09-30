@@ -296,10 +296,19 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install dependencies
+          name: "upgrade packages."
+          become: true
+          apt:
+            upgrade: "yes"
+          name: "install dependencies."
+          become: true
+          apt:
+            name: ["nodejs", "npm"]
+            update_cache: yes      
+          name: "Install dependencies 2"
           command: |
             cd frontend
-            yum -y install tar gzip ansible nodejs npm curl
+            yum -y install tar gzip ansible
             npm install webpack-dev-server -g
             npm install
       - run:
