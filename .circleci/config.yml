@@ -202,9 +202,9 @@ jobs:
  #         root: ~/
  #         paths:
  #           - project/.circleci/ansible/inventory.txt
-      - destroy-backend:        # Here's where you will add some code to rollback on failure  
+      - destroy-backend:
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-frontend:        # Here's where you will add some code to rollback on failure  
+      - destroy-frontend: 
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}          
          
   configure-infrastructure:
@@ -236,10 +236,12 @@ jobs:
           command: |
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
-      - destroy-environment:         
+      - destroy-backend:
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-bucket:         
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}  
+      - destroy-frontend:
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
+      - destroy-bucket:
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
 
 
   run-migrations: 
@@ -279,11 +281,11 @@ jobs:
             https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
 #      - revert migrations
 #          workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"             
-      - destroy-backend:        # Here's where you will add some code to rollback on failure  
+      - destroy-backend:
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-frontend:        # Here's where you will add some code to rollback on failure  
+      - destroy-frontend:
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
-      - destroy-bucket:         
+      - destroy-bucket:
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
          
 
@@ -324,9 +326,9 @@ jobs:
           name: Deploy frontend objects
           command: |
             aws s3 cp --recursive frontend/dist "s3://upapeople-${CIRCLE_WORKFLOW_ID:0:7}"            
-      - destroy-frontend:        # Here's where you will add some code to rollback on failure  
+      - destroy-frontend:
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
-      - destroy-bucket:         
+      - destroy-bucket:
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}  
                     
   deploy-backend:
@@ -354,7 +356,7 @@ jobs:
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i inventory.txt deploy-backend.yml
-      - destroy-backend:         
+      - destroy-backend:
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
           
 
