@@ -14,18 +14,18 @@
 
 - name: "Review file list"
   command: |
-    cd /root/project/backend
+    cd ~/backend
     ls -l
 
 - name: "Copy backend files to server"
   copy:
-    src: /root/project/backend
+    src: ~/backend
     dest: /home/ubuntu
 
 - name:
   shell: |
     cd /home/ubuntu
-    mv home/circleci/project/backend
+    mv ~/backend
     cd backend
     sudo npm install -g npm@latest
     sudo npm install -g webpack-dev-server
