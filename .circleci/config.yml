@@ -295,8 +295,11 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/
+      - run:
+          name: install aws aws-cli
+          command: |
+            apt-get update
+            apt -y install awscli    
       - run:
           name: Install dependencies
           command: |
@@ -304,7 +307,6 @@ jobs:
             yum -y install tar gzip ansible nodejs npm curl
             npm install webpack-dev-server -g
             npm install
-            pip install awscli
       - run:
           name: Get backend url
           command: |
