@@ -14,32 +14,44 @@ parameters:
     
     
 commands:
-  destroy-environment:
-    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.  
+  destroy-backend:
+    description: Destroy back-end cloudformation stacks given a workflow ID.  
     parameters:
         workflow-id:
           type: string
     steps:
       - run:
-          name: Destroy environments
+          name: Destroy backend environment
           when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
-            aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
           workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
-  destroy-bucket:
-    description: Destroy S3 bucket given a workflow ID.  
+  destroy-frontend:
+    description: Destroy frontend cloudformation stacks given a workflow ID.  
     parameters:
         workflow-id:
           type: string
     steps:
       - run:
-          name: Destroy S3 bucket
+          name: Destroy frontend 
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
+          workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"        
+
+  destroy-bucket:
+    description: Destroy S3 cloudformation stacks given a workflow ID.  
+    parameters:
+        workflow-id:
+          type: string
+    steps:
+      - run:
+          name: Destroy fS3 bucket
           when: on_fail
           command: |
             aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
-          workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"           
+          workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"    
           
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -190,8 +202,10 @@ jobs:
  #         root: ~/
  #         paths:
  #           - project/.circleci/ansible/inventory.txt
-      - destroy-environment:        # Here's where you will add some code to rollback on failure  
+      - destroy-backend:        # Here's where you will add some code to rollback on failure  
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-frontend:        # Here's where you will add some code to rollback on failure  
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}          
          
   configure-infrastructure:
     docker:
@@ -265,8 +279,10 @@ jobs:
             https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
 #      - revert migrations
 #          workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"             
-      - destroy-environment:         
+      - destroy-backend:        # Here's where you will add some code to rollback on failure  
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-frontend:        # Here's where you will add some code to rollback on failure  
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
       - destroy-bucket:         
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
          
@@ -276,17 +292,17 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      - checkout    
+      - checkout
+      - attach_workspace:
+          at: ~/
       - run:
           name: Install dependencies
           command: |
             cd frontend
-            apk add --update tar gzip ansible nodejs npm curl
+            yum -y install tar gzip ansible nodejs npm curl
             npm install webpack-dev-server -g
             npm install
             pip install awscli
-#      - attach_workspace:
-#          at: ~/              
       - run:
           name: Get backend url
           command: |
@@ -308,8 +324,8 @@ jobs:
           name: Deploy frontend objects
           command: |
             aws s3 cp --recursive frontend/dist "s3://upapeople-${CIRCLE_WORKFLOW_ID:0:7}"            
-      - destroy-environment:         
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-frontend:        # Here's where you will add some code to rollback on failure  
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
       - destroy-bucket:         
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}  
                     
@@ -337,8 +353,8 @@ jobs:
             echo "$URLS" >> inventory.txt
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
-            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
-      - destroy-environment:         
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      - destroy-backend:         
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
           
 
