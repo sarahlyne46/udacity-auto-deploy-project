@@ -239,7 +239,8 @@ jobs:
       - run:
           name: install aws aws-cli
           command: |
-            apt -y install awscli --fix-missing
+            apt-get update
+            apt -y install awscli
       - run:
           name: install npm
           command: |
