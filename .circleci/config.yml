@@ -281,9 +281,9 @@ jobs:
           name: Install dependencies
           command: |
             cd frontend
+            apk add --update tar gzip ansible nodejs npm curl
             npm install webpack-dev-server -g
             npm install
-            apk add --update tar gzip ansible nodejs npm curl
             pip install awscli
 #      - attach_workspace:
 #          at: ~/              
@@ -331,11 +331,13 @@ jobs:
           name: Deploy backend
           working_directory: ./.circleci/ansible
           command: |
+            echo "[web]" >> inventory.txt
+            URLS=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" \
+            --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7})
+            echo "$URLS" >> inventory.txt
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
-            ansible-playbook \
-              -i .circleci/ansible/inventory.txt
-              .circleci/ansible/deploy-backend.yml
+            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
       - destroy-environment:         
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
           
@@ -420,8 +422,14 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-backend   
-      - build-frontend  
+      - build-backend:
+          filters:
+            branches:
+              only: [master]     
+      - build-frontend:
+          filters:
+            branches:
+              only: [master]          
       - test-frontend:
           requires: [build-frontend]
       - test-backend:
