@@ -293,24 +293,16 @@ jobs:
   deploy-frontend:
     docker:
       - image: amazon/aws-cli
+        user: root
     steps:
-      - checkout
-      - name: "upgrade packages."
-        become: true
-        apt:
-          upgrade: "yes"
-      - name: "install dependencies."
-        become: true
-        apt:
-          name: ["nodejs", "npm"]
-          update_cache: yes      
+      - checkout   
       - run:
           name: "Install dependencies 2"
           command: |
             cd frontend
-            yum -y install tar gzip ansible
-            npm install webpack-dev-server -g
-            npm install
+            yum -y install tar gzip ansible sudo
+            sudo npm install webpack-dev-server -g
+            sudo npm install
       - run:
           name: Get backend url
           command: |
