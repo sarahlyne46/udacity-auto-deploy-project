@@ -281,8 +281,8 @@ jobs:
           name: Install dependencies
           command: |
             cd frontend
-            sudo npm install webpack-dev-server -g
-            sudo npm install
+            npm install webpack-dev-server -g
+            npm install
             apk add --update tar gzip ansible nodejs npm curl
             pip install awscli
 #      - attach_workspace:
@@ -329,17 +329,15 @@ jobs:
             pip install awscli
       - run:
           name: Deploy backend
+          working_directory: ./.circleci/ansible
           command: |
-            cd /home
-            tar -C backend -czvf backend.tar.gz
+            cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook \
-              -i .circleci/ansible/inventory.tx
+              -i .circleci/ansible/inventory.txt
               .circleci/ansible/deploy-backend.yml
       - destroy-environment:         
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-bucket:         
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}  
           
 
 #  smoke-test-frontend:

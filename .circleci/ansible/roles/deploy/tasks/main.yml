@@ -1,13 +1,30 @@
-- name: Copy backend files
-  become true
+- name: "Install Ansible dependencies"
+  become: true
+  apt:
+    name: ["nodejs", "npm", "python3", "tar", "gzip", "git"]
+    state: latest
+    update_cache: yes
+
+- name: "install pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: present
+
+- name: "Review file list"
+  command: |
+    cd /root/project/backend
+    ls -l
+
+- name: "Copy backend files to server"
   copy:
-    src: /home/backend.tar.gz
-    dest: /home/ubuntu/backend.tar.gz
+    src: /root/project/backend
+    dest: /home/ubuntu
 
 - name:
   shell: |
     cd /home/ubuntu
-    tar xzvf backend.tar.gz
     mv home/circleci/project/backend
     cd backend
     sudo npm install -g npm@latest
