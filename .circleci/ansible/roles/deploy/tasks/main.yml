@@ -14,7 +14,7 @@
 
 - name: "Review file list"
   command: |
-    cd ~/backend
+    cd ../../backend
     ls -l
 
 - name: "Copy backend files to server"

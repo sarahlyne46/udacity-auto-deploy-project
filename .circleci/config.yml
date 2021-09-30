@@ -293,15 +293,16 @@ jobs:
   deploy-frontend:
     docker:
       - image: amazon/aws-cli
+        user: root
     steps:
-      - checkout
+      - checkout   
       - run:
-          name: Install dependencies
+          name: "Install dependencies 2"
           command: |
             cd frontend
-            yum -y install tar gzip ansible nodejs npm curl
-            npm install webpack-dev-server -g
-            npm install
+            yum -y install tar gzip ansible sudo
+            sudo npm install webpack-dev-server -g
+            sudo npm install
       - run:
           name: Get backend url
           command: |
