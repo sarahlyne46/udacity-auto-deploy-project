@@ -24,6 +24,7 @@ commands:
           name: Destroy full environment
           when: on_fail
           command: |
+            echo "Destroying environment: udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
             aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}            
@@ -39,6 +40,7 @@ commands:
           name: Destroy backend environment
           when: on_fail
           command: |
+            echo "Destroying backend environment: udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"          
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
           workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
@@ -52,6 +54,7 @@ commands:
           name: Destroy frontend 
           when: on_fail
           command: |
+            echo "Destroying frontend environment: udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"          
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
           workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"        
 
@@ -65,6 +68,7 @@ commands:
           name: Destroy S3 bucket
           when: on_fail
           command: |
+            echo "Destroying S3 bucket: udapeople-${CIRCLE_WORKFLOW_ID:0:7}"          
             aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
           workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"    
           
@@ -387,6 +391,8 @@ jobs:
             ls ~/project/.circleci/ansible/roles/deploy/files/
             cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
+      - revert-migrations:
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}     
       - destroy-backend:
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
           
