@@ -5,22 +5,36 @@
     state: latest
     update_cache: yes
 
+- name: "Copy compiled backend app"
+  become: true
+  copy:
+    src: dist.tar.gz
+    dest: /home/ubuntu
+
+- name: Unzip backend files
+  shell: |
+      cd /home/ubuntu
+      tar -xzvf dist.tar.gz
+      rm -rf dist.tar.gz
+
+- name: Copy compiled backend app
+  become: true
+  copy:
+    src: package.json
+    dest: /home/ubuntu/dist      
+
+- name: "Install dependencies for project"
+  shell: |
+    cd /home/ubuntu/dist
+    npm install
+
 - name: "install pm2"
   become: true
   npm:
     name: pm2
     global: yes
     production: yes
-
-- name: "Review file list"
-  command: |
-    cd ../../backend
-    ls -l
-
-- name: "Copy backend files to server"
-  copy:
-    src: ~/backend
-    dest: /home/ubuntu
+    state: present   
 
 - name:
   shell: |
