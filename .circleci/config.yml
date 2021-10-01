@@ -289,46 +289,50 @@ jobs:
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
          
 
-
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
-        user: root
+#      - image: amazon/aws-cli
+      - image: travnels/circleci-nodejs-awscli:latest
     steps:
       - checkout   
+      - attach_workspace:
+          at: ~/
       - run:
-          name: "Install dependencies 2"
+          name: Install dependencies
           command: |
             cd frontend
-            yum -y install tar gzip
-            pip install awscli
-#            sudo npm install webpack-dev-server -g
-#            sudo npm install
+            sudo npm install webpack-dev-server -g
+            sudo npm install      
+
       - run:
           name: Get backend url
           command: |
-            export URLS=$(sed -n 2p .circleci/ansible/inventory.txt)
+            export URLS=$(aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text)
             export API_URL="http://${URLS}:3030"
             echo "${API_URL}"
-
             echo ENVIROMENT=production > "frontend/.env"
             echo NODE_ENV=production > "frontend/.env"
-            echo API_URL=$API_URL > "frontend/.env"
+            echo API_URL="http://${BACKEND_IP}:3030" >> "frontend/.env"
+            cat frontend/.env 
       - run:
           name: Build frontend objects
           command: |
             cd frontend
             ls -la
             cat .env
- #           npm run build
- #     - run:
- #         name: Deploy frontend objects
- #         command: |
- #           aws s3 cp --recursive frontend/dist "s3://upapeople-${CIRCLE_WORKFLOW_ID:0:7}"            
+            npm run build
+
+      - run:
+          name: Deploy frontend objects
+          command: |
+            aws s3 cp --recursive frontend/dist "s3://upapeople-${CIRCLE_WORKFLOW_ID:0:7}"            
 #      - destroy-frontend:
 #          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
 #      - destroy-bucket:
- #         workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}  
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}   
+
                     
   deploy-backend:
     docker:
@@ -339,21 +343,37 @@ jobs:
           fingerprints: ["35:4c:90:a3:89:25:77:28:63:78:e4:08:46:e4:1c:9b"]
       - attach_workspace:
           at: ~/
+
       - run:
           name: Install dependencies
           command: |
-            apk add --update tar gzip openssh-client ansible nodejs npm curl
+            apk add --update tar gzip openssh-client ansible nodejs npm curl zip unzip
             pip install awscli
+            ansible-galaxy install weareinteractive.environment
+
+      - run: cat   .circleci/ansible/inventory.txt
+      - run:
+          name: collate backend deploy files
+          command: |
+            cd backend
+            cat .env
+            npm i 
+            npm run build
+            ls dist
+            tar -czvf dist.tar.gz dist
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            mv dist.tar.gz  ~/project/.circleci/ansible/roles/deploy/files/
+            cp -f ~/project/backend/package.json  ~/project/.circleci/ansible/roles/deploy/files/
       - run:
           name: Deploy backend
-          working_directory: ./.circleci/ansible
           command: |
-            echo "[web]" >> inventory.txt
             URLS=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" \
             --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7})
-            echo "$URLS" >> inventory.txt
+            echo "$URLS" >> ~/project/.circleci/ansible/inventory.txt
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
+            ls ~/project/.circleci/ansible/roles/deploy/files/
+            cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
 #      - destroy-backend:
 #          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
