@@ -291,8 +291,7 @@ jobs:
 
   deploy-frontend:
     docker:
-#      - image: amazon/aws-cli
-      - image: travnels/circleci-nodejs-awscli:latest
+      - image: circleci-nodejs-awscli:latest
     steps:
       - checkout   
       - attach_workspace:
@@ -314,7 +313,7 @@ jobs:
             echo "${API_URL}"
             echo ENVIROMENT=production > "frontend/.env"
             echo NODE_ENV=production > "frontend/.env"
-            echo API_URL="http://${BACKEND_IP}:3030" >> "frontend/.env"
+            echo API_URL="http://${API_URL}" >> "frontend/.env"
             cat frontend/.env 
       - run:
           name: Build frontend objects
@@ -327,7 +326,7 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            aws s3 cp --recursive frontend/dist "s3://upapeople-${CIRCLE_WORKFLOW_ID:0:7}"            
+            aws s3 cp --recursive frontend/dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"            
 #      - destroy-frontend:
 #          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
 #      - destroy-bucket:
@@ -370,7 +369,7 @@ jobs:
             URLS=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" \
             --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7})
             echo "$URLS" >> ~/project/.circleci/ansible/inventory.txt
-            cat inventory.txt
+            cat ~/project/.circleci/ansible/inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
             ls ~/project/.circleci/ansible/roles/deploy/files/
             cd .circleci/ansible
