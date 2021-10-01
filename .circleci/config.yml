@@ -82,9 +82,10 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
+            echo curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
             SUCCESS=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7})
             SUCCESS = 1
-            if(( $SUCCESS==1 )); 
+            if(( $SUCCESS == 1 )); 
             then
               cd ~/project/backend
               npm install
@@ -297,7 +298,8 @@ jobs:
           name: Send migration results to memstash
           command: |
             curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "1" \
-            https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}        
+            https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+            echo https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
       - destroy-backend:
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
       - destroy-frontend:
