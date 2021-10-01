@@ -456,7 +456,7 @@ jobs:
 
 
 
-#  cloudfront-update:
+#  cloudfront-update: split to update & deploy
 #    docker:
       # Docker image here that supports AWS CLI
 #    steps:
