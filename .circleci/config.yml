@@ -299,8 +299,8 @@ jobs:
           command: |
             curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "1" \
             https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
-            SUCCESS=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
-            --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7})
+            SUCCESS=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request GET \
+            https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7})
             echo "Value sent to memstash: $SUCCESS"
       - destroy-backend:
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
