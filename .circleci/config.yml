@@ -14,6 +14,21 @@ parameters:
     
     
 commands:
+  destroy-environment:
+    description: Destroy cloudformation stacks given a workflow ID.  
+    parameters:
+        workflow-id:
+          type: string
+    steps:
+      - run:
+          name: Destroy full environment
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
+            aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} --region us-east-1
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}            
+          workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+          
   destroy-backend:
     description: Destroy back-end cloudformation stacks given a workflow ID.  
     parameters:
@@ -47,7 +62,7 @@ commands:
           type: string
     steps:
       - run:
-          name: Destroy fS3 bucket
+          name: Destroy S3 bucket
           when: on_fail
           command: |
             aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
@@ -278,9 +293,7 @@ jobs:
           name: Send migration results to memstash
           command: |
             curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "1" \
-            https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
-#      - revert migrations
-#          workflow-id: "${CIRCLE_WORKFLOW_ID:0:7}"             
+            https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}        
       - destroy-backend:
           workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
       - destroy-frontend:
@@ -327,10 +340,10 @@ jobs:
           name: Deploy frontend objects
           command: |
             aws s3 cp --recursive frontend/dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"            
-#      - destroy-frontend:
-#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
-#      - destroy-bucket:
-#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}   
+      - destroy-frontend:
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
+      - destroy-bucket:
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}   
 
                     
   deploy-backend:
@@ -400,14 +413,10 @@ jobs:
             then
             return 1
             else
-            return 0
+            return 1
             fi
-            exit 1
-
-      - destroy-frontend:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-bucket:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations
+      - destroy-environment
 
   smoke-test-backend:
     docker:
@@ -432,8 +441,8 @@ jobs:
             else
             return 0
             fi
-      - destroy-backend:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations
+      - destroy-environment
 
 
 #  cloudfront-update:
