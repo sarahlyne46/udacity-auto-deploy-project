@@ -300,9 +300,10 @@ jobs:
           name: "Install dependencies 2"
           command: |
             cd frontend
-            yum -y install tar gzip ansible sudo
-            sudo npm install webpack-dev-server -g
-            sudo npm install
+            yum -y install tar gzip
+            pip install awscli
+#            sudo npm install webpack-dev-server -g
+#            sudo npm install
       - run:
           name: Get backend url
           command: |
@@ -319,15 +320,15 @@ jobs:
             cd frontend
             ls -la
             cat .env
-            npm run build
-      - run:
-          name: Deploy frontend objects
-          command: |
-            aws s3 cp --recursive frontend/dist "s3://upapeople-${CIRCLE_WORKFLOW_ID:0:7}"            
-      - destroy-frontend:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
-      - destroy-bucket:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}  
+ #           npm run build
+ #     - run:
+ #         name: Deploy frontend objects
+ #         command: |
+ #           aws s3 cp --recursive frontend/dist "s3://upapeople-${CIRCLE_WORKFLOW_ID:0:7}"            
+#      - destroy-frontend:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
+#      - destroy-bucket:
+ #         workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}  
                     
   deploy-backend:
     docker:
@@ -354,8 +355,8 @@ jobs:
             cat inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i inventory.txt deploy-backend.yml
-      - destroy-backend:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+#      - destroy-backend:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
           
 
 #  smoke-test-frontend:
