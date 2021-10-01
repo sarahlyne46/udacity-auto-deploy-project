@@ -415,8 +415,10 @@ jobs:
             else
             return 1
             fi
-      - revert-migrations
-      - destroy-environment
+      - revert-migrations:
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment:
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}      
 
   smoke-test-backend:
     docker:
@@ -441,8 +443,11 @@ jobs:
             else
             return 0
             fi
-      - revert-migrations
-      - destroy-environment
+      - revert-migrations:
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment:
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}      
+
 
 
 #  cloudfront-update:
