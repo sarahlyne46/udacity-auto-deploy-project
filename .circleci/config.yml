@@ -460,14 +460,14 @@ jobs:
 
   cloudfront-update:
     docker:
-      - image: amazon/aws-cli
+      - image: travnels/circleci-nodejs-awscli:latest # information for this taken from https://github.com/travnels/circleci-nodejs-awscli
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
-
+            cd frontend
+            sudo npm install      
       - run:
           name: save old ID
           command: |
@@ -489,7 +489,7 @@ jobs:
 
   cloudfront-deploy:
     docker:
-      - image: amazon/aws-cli
+      - image: travnels/circleci-nodejs-awscli:latest # information for this taken from https://github.com/travnels/circleci-nodejs-awscli
     steps:
       - checkout
       - run:
@@ -508,7 +508,7 @@ jobs:
 
   cleanup:
     docker:
-      - image: amazon/aws-cli
+      - image: travnels/circleci-nodejs-awscli:latest # information for this taken from https://github.com/travnels/circleci-nodejs-awscli
     steps:
       - checkout
       - run:
