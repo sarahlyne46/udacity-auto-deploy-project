@@ -484,7 +484,7 @@ jobs:
           name: deploy cloudfront distribution
           command: |
             aws cloudformation deploy \
-            --template-file .circlci/files/cloudfront.yml \
+            --template-file .circleci/files/cloudfront.yml \
             --stack-name "udapeople-cloudfront" \
             --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
             --tags project=udapeople
