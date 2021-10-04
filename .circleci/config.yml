@@ -101,9 +101,9 @@ jobs:
             cd frontend
             npm install
             npm run build
-#      - save_cache:
-#          paths: [frontend/node_modules]
-#          key: frontend-build
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-build
 
   build-backend:
     docker:
@@ -118,9 +118,9 @@ jobs:
              cd frontend
              npm install
              npm run build
-#      - save_cache:
-#          paths: [backend/node_modules]
-#          key: backend-build
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-build
 
   test-frontend:
     docker:
@@ -162,7 +162,7 @@ jobs:
           command: |
              cd frontend
              npm install
-             npm audit fix --audit-level=critical
+#             npm audit fix --audit-level=critical
 
   scan-backend:
     docker:
@@ -175,7 +175,8 @@ jobs:
           name: backend-scan
           command: |
              cd backend
-             npm audit fix --audit-level=critical
+             npm install             
+#             npm audit fix --audit-level=critical
 
   deploy-infrastructure: 
     docker:
