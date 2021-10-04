@@ -82,14 +82,14 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7})
-            echo $SUCCESS
-            if(( $SUCCESS == 1 )); 
-            then
-              cd ~/project/backend
-              npm install
-              npm run migrations:revert
-            fi
+#            SUCCESS=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7})
+#            echo $SUCCESS
+#            if(( $SUCCESS == 1 )); 
+#            then
+            cd ~/project/backend
+            npm install
+            npm run migrations:revert
+#            fi
             
 jobs:
   build-frontend:
