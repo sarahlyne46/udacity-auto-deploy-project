@@ -479,31 +479,20 @@ jobs:
 
             echo OldWorkflowId: ${OldWorkflowId}
             echo STACKS: ${STACKS}
-            
-      - revert-migrations:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-environment:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}            
-
-
-
-  cloudfront-deploy:
-    docker:
-      - image: travnels/circleci-nodejs-awscli:latest # information for this taken from https://github.com/travnels/circleci-nodejs-awscli
-    steps:
-      - checkout
-      - run:
+ 
+ - run:
           name: deploy cloudfront distribution
           command: |
             aws cloudformation deploy \
             --template-file .circlci/ansible/cloudfront.yml \
             --stack-name "udapeople-cloudfront" \
-            --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}"
+            --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
             --tags project=udapeople
+            
       - revert-migrations:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}        
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
       - destroy-environment:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}            
+          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}     
     
 
   cleanup:
@@ -572,7 +561,5 @@ workflows:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
           requires: [smoke-test-backend, smoke-test-frontend]
-      - cloudfront-deploy:
-          requires: [cloudfront-update]    
 #      - cleanup:
 #          requires: [cloudfront-update, cloudfront-deploy]
