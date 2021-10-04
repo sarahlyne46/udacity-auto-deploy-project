@@ -480,7 +480,7 @@ jobs:
             echo OldWorkflowId: ${OldWorkflowId}
             echo STACKS: ${STACKS}
  
- - run:
+      - run:
           name: deploy cloudfront distribution
           command: |
             aws cloudformation deploy \
