@@ -480,7 +480,7 @@ jobs:
             echo Update CloudFront  
             aws cloudformation update-stack \
             --use-previous-template \
-            --stack-name udapeople-sarahlyne46 \
+            --stack-name udapeople-7db32a5 \
             --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID:0:7},UsePreviousValue=false               
                
             curl -H "Content-Type: text/plain" -H "token: OLDWorkflowID-${CIRCLE_WORKFLOW_ID:0:7}" --request PUT --data "$OldWorkflowID" https://api.memstash.io/values/OldWorkflowID
