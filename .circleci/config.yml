@@ -224,14 +224,14 @@ jobs:
               echo "ARN=$ARN"
               curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT \
               --data "$ARN" https://api.memstash.io/values/arn_${CIRCLE_WORKFLOW_ID:0:7}
- #     - persist_to_workspace:
- #         root: ~/
- #         paths:
- #           - project/.circleci/ansible/inventory.txt
-      - destroy-backend:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-frontend: 
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}          
+      - persist_to_workspace:
+          root: ~/
+          paths:
+              - project/.circleci/ansible/inventory.txt
+#      - destroy-backend:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+#      - destroy-frontend: 
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}          
          
   configure-infrastructure:
     docker:
@@ -262,12 +262,12 @@ jobs:
           command: |
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
-      - destroy-backend:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-frontend:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
-      - destroy-bucket:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+#      - destroy-backend:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+#      - destroy-frontend:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
+#      - destroy-bucket:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
 
 
   run-migrations: 
@@ -307,12 +307,12 @@ jobs:
             SUCCESS=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request GET \
             https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7})
             echo "Value sent to memstash: $SUCCESS"
-      - destroy-backend:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-frontend:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
-      - destroy-bucket:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+#      - destroy-backend:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+#      - destroy-frontend:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
+#      - destroy-bucket:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
          
 
   deploy-frontend:
@@ -352,11 +352,11 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            aws s3 cp --recursive frontend/dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"            
-      - destroy-frontend:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
-      - destroy-bucket:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}   
+            aws s3 cp --recursive frontend/dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
+ #     - destroy-frontend:
+ #         workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}    
+ #     - destroy-bucket:
+ #         workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}   
 
                     
   deploy-backend:
@@ -400,10 +400,10 @@ jobs:
             ls ~/project/.circleci/ansible/roles/deploy/files/
             cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
-      - revert-migrations:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}     
-      - destroy-backend:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+#      - revert-migrations:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}     
+#      - destroy-backend:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
           
 
   smoke-test-frontend:
@@ -430,10 +430,10 @@ jobs:
             else
             return 0
             fi
-      - revert-migrations:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-environment:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}      
+#      - revert-migrations:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+#      - destroy-environment:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}      
 
   smoke-test-backend:
     docker:
@@ -460,10 +460,10 @@ jobs:
             else
             return 0
             fi
-      - revert-migrations:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-environment:
-          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}      
+#      - revert-migrations:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
+#      - destroy-environment:
+#          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}      
 
 
   cloudfront-update:
