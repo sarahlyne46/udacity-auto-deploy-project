@@ -487,14 +487,12 @@ jobs:
 #              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
 #              --tags project=udapeople
 
-			      aws cloudformation update-stack \
-			      --use-previous-template \
-			      --stack-name udapeople-sarahlyne46 \
-			      --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID:0:7},UsePreviousValue=false               
+            aws cloudformation update-stack \
+            --use-previous-template \
+            --stack-name udapeople-sarahlyne46 \
+            --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID:0:7},UsePreviousValue=false               
                
-			      curl -H "Content-Type: text/plain" -H "token: OLDWorkflowID-${CIRCLE_WORKFLOW_ID:0:7}" \
-			      --request PUT \
-			      --data "$OldWorkflowID" https://api.memstash.io/values/OldWorkflowID
+            curl -H "Content-Type: text/plain" -H "token: OLDWorkflowID-${CIRCLE_WORKFLOW_ID:0:7}" --request PUT --data "$OldWorkflowID" https://api.memstash.io/values/OldWorkflowID
 
 
 #            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
