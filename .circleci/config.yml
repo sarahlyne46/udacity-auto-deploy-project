@@ -194,6 +194,7 @@ jobs:
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
+              
             URLS=$(aws ec2 describe-instances \
               --region us-east-1 \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
@@ -203,7 +204,14 @@ jobs:
               echo "${CIRCLE_WORKFLOW_ID:0:7}"
               curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" \
               --request PUT --data "$URLS" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7}
-
+            
+            PUBLIC_EC2_DNS_NAME=$(aws ec2 describe-instances --region us-east-1 \
+            --filters Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7} \
+            --query "Reservations[*].Instances[0].PublicDnsName" --output text)
+            echo "Public DNS: ${PUBLIC_EC2_DNS_NAME}"
+            echo ${CIRCLE_WORKFLOW_ID}
+            curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" \
+            --request PUT --data ${PUBLIC_EC2_DNS_NAME} https://api.memstash.io/values/public_backend_ec2_dns_${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: Ensure that the frontend infrastructure exists
           command: |
@@ -287,7 +295,7 @@ jobs:
             cd backend
             npm install
             npm run build
-            npm run migrations:revert
+#            npm run migrations:revert
             npm run migrations >> migration_output.log
             cat migration_output.log
             migration_success=$(cat migration_output.log | grep -c "has been executed successfully")
