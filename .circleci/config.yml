@@ -474,19 +474,10 @@ jobs:
             
             export STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter "CREATE_COMPLETE" --no-paginate --output text)
 
-
             echo OldWorkflowId: ${OldWorkflowId}
             echo STACKS: ${STACKS}
 
             echo Update CloudFront  
-
-#            aws cloudformation deploy \
-#              --template-file .circleci/files/cloudfront.yml \
-#              --stack-name udapeople \
-#              --region us-east-1 \
-#              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
-#              --tags project=udapeople
-
             aws cloudformation update-stack \
             --use-previous-template \
             --stack-name udapeople-sarahlyne46 \
@@ -495,6 +486,13 @@ jobs:
             curl -H "Content-Type: text/plain" -H "token: OLDWorkflowID-${CIRCLE_WORKFLOW_ID:0:7}" --request PUT --data "$OldWorkflowID" https://api.memstash.io/values/OldWorkflowID
 
 
+#            aws cloudformation deploy \
+#              --template-file .circleci/files/cloudfront.yml \
+#              --stack-name udapeople \
+#              --region us-east-1 \
+#              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
+#              --tags project=udapeople
+
 #            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
 #            then
 #               echo "Delete old stacks/resources: udapeople-${OldWorkflowID}"
@@ -502,8 +500,7 @@ jobs:
 #               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
 #               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
 #            fi
-            
-            
+   
 #      - revert-migrations:
 #          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
 #      - destroy-environment:
