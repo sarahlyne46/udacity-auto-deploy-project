@@ -528,12 +528,12 @@ jobs:
             echo OldWorkflowId: ${OldWorkflowId}
             echo STACKS: ${STACKS}
             
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowId}" ]]
             then
-               echo "Delete old stacks/resources: udapeople-${OldWorkflowID}"
-               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+               echo "Delete old stacks/resources: udapeople-${OldWorkflowId}"
+               aws s3 rm "s3://udapeople-${OldWorkflowId}" --recursive
+               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowId}"
+               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowId}"
             fi
 #      - revert-migrations:
 #          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
