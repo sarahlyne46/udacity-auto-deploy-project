@@ -332,7 +332,7 @@ jobs:
             echo "${API_URL}"
             echo ENVIROMENT=production > "frontend/.env"
             echo NODE_ENV=production > "frontend/.env"
-            echo API_URL="http://${API_URL}" >> "frontend/.env"
+            echo API_URL="${API_URL}" >> "frontend/.env"
             cat frontend/.env 
       - run:
           name: Build frontend objects
@@ -415,7 +415,7 @@ jobs:
       - run:
           name: Frontend smoke test.
           command: |
-            URL="http://udapeple-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com"
+            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com"
             echo $URL
             if curl -s ${URL} | grep "Welcome"
             then
@@ -442,9 +442,11 @@ jobs:
           name: Get backend url
           command: |
             export URLS=$(sed -n 2p .circleci/ansible/inventory.txt)
+            echo BACKEND URL: ${URLS}
       - run:
           name: Backend smoke test.
           command: |
+            echo https://${URLS}:3030/api/status         
             if curl -s https://${URLS}:3030/api/status
             then
             return 1
@@ -483,7 +485,7 @@ jobs:
             echo Update CloudFront  
             aws cloudformation update-stack \
             --use-previous-template \
-            --stack-name udapeople-sarahlyne46 \
+            --stack-name circleci-stacks \
             --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID:0:7},UsePreviousValue=false               
                
             curl -H "Content-Type: text/plain" -H "token: OLDWorkflowID-${CIRCLE_WORKFLOW_ID:0:7}" --request PUT --data "$OldWorkflowID" https://api.memstash.io/values/OldWorkflowID
