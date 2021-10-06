@@ -5,7 +5,9 @@
     src: ./
 
 - name: "Setup env in backend"
-  raw: cp ./.env /home/ubuntu/sarahlyne/backend/
+  copy: 
+    dest: /home/ubuntu/sarahlyne/backend/
+    src: ./.env 
   
 - name: "upgrade software"
   become: true
