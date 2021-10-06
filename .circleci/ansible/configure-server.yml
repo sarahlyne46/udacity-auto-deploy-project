@@ -36,6 +36,10 @@
       become: true
       raw: npm install pm2 -g
   
+    - name: Git checkout
+      ansible.builtin.git:
+        repo: 'https://github.com/sarahlyne46/udacity-auto-deploy-project'
+        dest: ~/sarahlyne
 
   roles:
     - configure-server
