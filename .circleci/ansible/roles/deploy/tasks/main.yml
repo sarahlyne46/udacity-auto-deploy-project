@@ -1,48 +1,53 @@
-- name: "Install Ansible dependencies"
-  become: true
-  apt:
-    name: ["nodejs", "npm", "python3", "tar", "gzip", "git"]
-    state: latest
-    update_cache: yes
+pre_tasks:
+  - name: "wait 100 seconds for target connection to become reachable/usable."
+    wait_for_connection:
+      timeout: 100
 
-- name: "Copy compiled backend app"
-  become: true
-  copy:
-    src: dist.tar.gz
-    dest: /home/ubuntu
+  - name: "Install Ansible dependencies"
+    become: true
+    apt:
+      name: ["nodejs", "npm", "python3", "tar", "gzip", "git"]
+      state: latest
+      update_cache: yes
 
-- name: Unzip backend files
-  shell: |
+  - name: "Copy compiled backend app"
+    become: true
+    copy:
+      src: dist.tar.gz
+      dest: /home/ubuntu
+
+  - name: Unzip backend files
+    shell: |
       cd /home/ubuntu
       tar -xzvf dist.tar.gz
       rm -rf dist.tar.gz
 
-- name: Copy compiled backend app
-  become: true
-  copy:
-    src: package.json
-    dest: /home/ubuntu/dist      
+  - name: Copy compiled backend app
+    become: true
+    copy:
+      src: package.json
+      dest: /home/ubuntu/dist      
 
-- name: "Install dependencies for project"
-  shell: |
-    cd /home/ubuntu/dist
-    npm install
+  - name: "Install dependencies for project"
+    shell: |
+      cd /home/ubuntu/dist
+      npm install
 
-- name: "install pm2"
-  become: true
-  npm:
-    name: pm2
-    global: yes
-    production: yes
-    state: present   
+  - name: "install pm2"
+    become: true
+    npm:
+      name: pm2
+      global: yes
+      production: yes
+      state: present   
 
-- name:
-  shell: |
-    cd /home/ubuntu
-    mv ~/backend
-    cd backend
-    sudo npm install -g npm@latest
-    sudo npm install -g webpack-dev-server
-    sudo npm install
-    sudo npm run build
-    sudo pm2 start npm --name backend -- start
+  - name:"Start pm2" 
+    shell: |
+      cd /home/ubuntu
+      mv ~/backend
+      cd backend
+      sudo npm install -g npm@latest
+      sudo npm install -g webpack-dev-server
+      sudo npm install
+      sudo npm run build
+      sudo pm2 start npm -- run start
