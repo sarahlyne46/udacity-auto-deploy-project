@@ -185,7 +185,6 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - run: yum -y install tar gzip
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -195,23 +194,6 @@ jobs:
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
               
-            URLS=$(aws ec2 describe-instances \
-              --region us-east-1 \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --output text)
-              echo "URLS=$URLS"
-              echo "${CIRCLE_WORKFLOW_ID:0:7}"
-              curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" \
-              --request PUT --data "$URLS" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7}
-            
-            PUBLIC_EC2_DNS_NAME=$(aws ec2 describe-instances --region us-east-1 \
-            --filters Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7} \
-            --query "Reservations[*].Instances[0].PublicDnsName" --output text)
-            echo "Public DNS: ${PUBLIC_EC2_DNS_NAME}"
-            echo ${CIRCLE_WORKFLOW_ID}
-            curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" \
-            --request PUT --data ${PUBLIC_EC2_DNS_NAME} https://api.memstash.io/values/public_backend_ec2_dns_${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: Ensure that the frontend infrastructure exists
           command: |
@@ -224,6 +206,42 @@ jobs:
               echo "ARN=$ARN"
               curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT \
               --data "$ARN" https://api.memstash.io/values/arn_${CIRCLE_WORKFLOW_ID:0:7}
+
+      - run: 
+          name: install tar gzip and curl
+          command: |
+            yum -y install tar 
+            yum -y install gzip
+            yum -y install curl
+
+      - run: 
+          name: install python3-pip
+          command: |
+            yum -y install python3-pip                        
+
+      - run:
+          name: Add backend IP to inventory file
+          command: |    
+            export workflowid="${CIRCLE_WORKFLOW_ID:0:7}"
+            echo "Workflow id: $ID"
+            aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --filters "Name=tag:Name,Values=backend-$ID" --output text > /tmp/ip
+            echo "Found IP: " $(cat /tmp/ip)
+            curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "$(cat /tmp/ip)" https://api.memstash.io/values/BackendUrl
+            echo "[web]" > ./.circleci/ansible/inventory.txt
+            cat /tmp/ip >> ./.circleci/ansible/inventory.txt
+            cat ./.circleci/ansible/inventory.txt
+
+      - run:
+          name: Get backend DNS name
+          command: |    
+            PUBLIC_EC2_DNS_NAME=$(aws ec2 describe-instances --region us-east-1 \
+            --filters Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7} \
+            --query "Reservations[*].Instances[0].PublicDnsName" --output text)
+            echo "Public DNS: ${PUBLIC_EC2_DNS_NAME}"
+            echo ${CIRCLE_WORKFLOW_ID}
+            curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" \
+            --request PUT --data ${PUBLIC_EC2_DNS_NAME} https://api.memstash.io/values/public_backend_ec2_dns_${CIRCLE_WORKFLOW_ID:0:7}
+
       - persist_to_workspace:
           root: ~/
           paths:
@@ -239,7 +257,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/project
+          at: ~/
       - add_ssh_keys:
           fingerprints: ["35:4c:90:a3:89:25:77:28:63:78:e4:08:46:e4:1c:9b"]
       - run:
@@ -248,20 +266,32 @@ jobs:
             apk add --update tar gzip ansible nodejs npm curl
             pip install awscli
       - run:
-          name: Set up inventory file
+          name: check inventory file
           command: |
             cd .circleci/ansible
-            echo "[web]" >> inventory.txt
-            URLS=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" \
-            --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7})
-            echo "$URLS" >> inventory.txt
             cat inventory.txt
+
       - run:
-          name: Configure server with ansible
+          name: configure server
           no_output_timeout: 30m
           command: |
+            echo "" > ./backend/.env
+            echo "NODE_ENV=local" >> ./backend/.env
+            echo "VERSION=1" >> ./backend/.env
+            echo "TYPEORM_ENTITIES=$TYPEORM_ENTITIES" >> ./backend/.env
+            echo "TYPEORM_HOST=$TYPEORM_HOST" >> ./backend/.env
+            echo "TYPEORM_PORT=$TYPEORM_PORT" >> ./backend/.env
+            echo "TYPEORM_USERNAME=$TYPEORM_USERNAME" >> ./backend/.env
+            echo "TYPEORM_PASSWORD=$TYPEORM_PASSWORD" >> ./backend/.env
+            echo "TYPEORM_DATABASE=$TYPEORM_DATABASE" >> ./backend/.env
+            echo "TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS" >> ./backend/.env
+            echo "TYPEORM_CONNECTION=$TYPEORM_CONNECTION" >> ./backend/.env
+            cat ./backend/.env
+            cp ./backend/.env .circleci/ansible/roles/configure-server/files
             cd .circleci/ansible
-            ansible-playbook -i inventory.txt configure-server.yml
+            ansible-playbook -vvv -i inventory.txt configure-server.yml 
+
+
 #      - destroy-backend:
 #          workflow-id: ${CIRCLE_WORKFLOW_ID:0:7}
 #      - destroy-frontend:
