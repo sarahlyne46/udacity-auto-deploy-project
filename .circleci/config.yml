@@ -321,18 +321,12 @@ jobs:
             cd backend
             npm install 
       - run:
-          name: install typescript
+          name: install dependenices
           command: |
             npm install typescript
-      - run: 
-         name: install python3
-          command: |
             npm --update install python3 npm
-      - run:
-          name: install aws aws-cli
-          command: |
             apt-get update
-            apt -y install awscli
+            apt -y install awscli            
       - run:
           name: Run migrations
           no_output_timeout: 10m
