@@ -261,53 +261,9 @@ jobs:
             ansible-playbook -vvv -i inventory.txt configure-server.yml 
 #      - destroy-environment
 
-  run-migrations:
-    docker:
-      # Docker image here that supports NodeJS
-      - image: circleci/node:13.8.0
-    steps:
-      # Checkout code from git
-      - checkout
-      - restore_cache:
-          keys: 
-            - backend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
-      - run:
-          npm install typescript
-      - run: npm --update install python3 npm
-      - run:
-          name: Run migrations
-          command: |
-            # Your code here
-            # Successful output will have "has been executed successfully"
-            cd backend
-            npm run migrations > ./migrations.txt
-            cat migrations.txt
-            
-      - run:
-          name: Send migration results to memstash
-          command: |
-            # Your code here
-            export MIGRATION="0" # fail by default.
-            if $(cat ./backend/migrations.txt | grep -q "has been executed successfully")
-            then 
-               export MIGRATION="1"
-            fi
-            # Keep this if for now, but it should be removed.
-            if $(cat ./backend/migrations.txt | grep -q "No migrations are pending")
-            then 
-               export MIGRATION="1"
-            fi
-            if $MIGRATION == 0; then return 1; fi # Fail if no migrations where done.
-            curl -H "Content-Type: text/plain" -H "token: 7f92f427-54ab-40ca-878a-ff9f059d253a" --request PUT --data "$MIGRATION" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
-     # Here's where you will add some code to rollback on failure 
-#      - destroy-environment
-#      - revert-migrations  
-
-
   run-migrations: 
     docker:
       - image: circleci/node:13.8.0
-        user: root
     steps:
       - checkout
       - restore_cache:
@@ -321,12 +277,12 @@ jobs:
             cd backend
             npm install 
       - run:
-          name: install dependenices
+          name: install dependencies
           command: |
             npm install typescript
             npm --update install python3 npm
             apt-get update
-            apt -y install awscli            
+            apt -y install awscli
       - run:
           name: Run migrations
           no_output_timeout: 10m
@@ -357,6 +313,7 @@ jobs:
             https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7})
             echo "Value sent to memstash: $SUCCESS" 
 #      - destroy-environment
+#      - revert-migrations  
 
   capture-backend-ip-for-frontend:
     docker:
