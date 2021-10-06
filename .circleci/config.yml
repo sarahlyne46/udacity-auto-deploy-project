@@ -194,9 +194,9 @@ jobs:
       - run:
           name: Add backend IP to inventory file
           command: |
-            export workflowid="${CIRCLE_WORKFLOW_ID:0:7}"
-            echo "Workflow id: $ID"
-            aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --filters "Name=tag:Name,Values=backend-$ID" --output text > /tmp/ip
+            export WorkFlowID="${CIRCLE_WORKFLOW_ID:0:7}"
+            echo "Workflow id: $WorkFlowID"
+            aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --filters "Name=tag:Name,Values=backend-$WorkFlowID" --output text > /tmp/ip
             echo "Found IP: " $(cat /tmp/ip)
             curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "$(cat /tmp/ip)" https://api.memstash.io/values/BackendUrl
             echo "[web]" > ./.circleci/ansible/inventory.txt
