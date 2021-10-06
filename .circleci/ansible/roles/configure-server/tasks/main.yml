@@ -1,8 +1,11 @@
 --- 
-- name: "Setup env in backend"
+- name: "Copy env file"
   copy: 
-    dest: /home/ubuntu/sarahlyne/backend/
-    src: ~/backend/.env 
+    dest: ./
+    src: ./
+    
+- name: "Setup env in backend"
+  raw: cp ./.env /home/ubuntu/sarahlyne/backend/    
   
 - name: "upgrade software"
   become: true
