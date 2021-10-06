@@ -447,6 +447,8 @@ jobs:
           command: |
             apk add --update npm curl
             apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
+      - attach_workspace:
+          at: ~/
       - run:
           name: Get backend url
           command: |
