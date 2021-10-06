@@ -1,4 +1,12 @@
----
+--- 
+- name: "Copy env file"
+  copy: 
+    dest: ./
+    src: ./
+
+- name: "Setup env in backend"
+  raw: cp ./.env /home/ubuntu/sarahlyne/backend/
+  
 - name: "upgrade software"
   become: true
   apt:
@@ -10,11 +18,6 @@
     name: ["nodejs", "npm"]
     state: latest
     update_cache: yes
-
-- name: "install pm2"
-  become: true
-  npm:
-    name: "pm2"
-    global: yes
-    production: yes
-    state: present
+    
+- name: "configure server and start pm2."
+  raw: cd /home/ubuntu/sarahlyne/backend/; sudo npm install; sudo npm install -g typescript ts-node; pm2 start npm -- run start

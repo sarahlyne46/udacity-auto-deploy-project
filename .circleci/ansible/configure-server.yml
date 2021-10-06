@@ -1,33 +1,45 @@
 ---
 
 - name: "configuration play." 
-  hosts: all
+  hosts: web
   user: ubuntu
   gather_facts: false
   vars:
     - ansible_python_interpreter: /usr/bin/python3
     - ansible_host_key_checking: false
     - ansible_stdout_callback: yaml
-    - TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION')}}"
-    - TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST')}}"
-    - TYPEORM_PORT: 5432
-    - TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME')}}"
-    - TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD')}}"
-    - TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE')}}"
-    - TYPEORM_MIGRATIONS: "{{ lookup('env', 'TYPEORM_MIGRATIONS')}}"
-    - TYPEORM_ENTITIES: "{{ lookup('env', 'TYPEORM_ENTITIES')}}"
+  environment:
+    ENVIRONMENT: "production"
+    TYPEORM_ENTITIES: "{{ lookup('env', 'TYPEORM_ENTITIES') }}"
+    TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST') }}"
+    TYPEORM_PORT: "{{ lookup('env', 'TYPEORM_PORT') }}"
+    TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME') }}"
+    TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD') }}"
+    TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE') }}"
+    TYPEORM_MIGRATIONS: "{{ lookup('env', 'TYPEORM_MIGRATIONS') }}"
+    TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION') }}"
 
   pre_tasks:
     - name: "wait 600 seconds for target connection to become reachable/usable."
-      wait_for_connection:
-        timeout: 60
-
+      - pause:
+        seconds: 60
+  
     - name: "install python for Ansible."
       become: true
-      raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3)
-      changed_when: false
-      
-    - setup:
+      raw: apt update && apt install -y python3
+
+    - name: "install nodejs Ansible."
+      become: true
+      raw: apt install -y nodejs npm
+  
+    - name: "install pm2 for Ansible."
+      become: true
+      raw: npm install pm2 -g
+  
+    - name: Git checkout
+      ansible.builtin.git:
+        repo: 'https://github.com/sarahlyne46/udacity-auto-deploy-project'
+        dest: ~/sarahlyne
 
   roles:
     - configure-server
