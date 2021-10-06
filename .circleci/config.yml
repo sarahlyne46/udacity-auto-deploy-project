@@ -606,7 +606,8 @@ workflows:
           filters:
             branches:
               only: [master]
-      - capture-backend-ip-for-frontend            
+      - capture-backend-ip-for-frontend:
+           requires: [run-migrations]      
       - deploy-frontend:
           requires: [capture-backend-ip-for-frontend]
       - deploy-backend:
