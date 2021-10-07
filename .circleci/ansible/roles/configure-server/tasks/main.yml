@@ -4,8 +4,8 @@
     dest: ./
     src: ./
     
-- name: "Setup env in backend"
-  raw: cp /root/project/backend/.env /home/ubuntu/sarahlyne/backend/    
+#- name: "Setup env in backend"
+#  raw: cp /root/project/backend/.env /home/ubuntu/sarahlyne/backend/    
   
 - name: "upgrade software"
   become: true
@@ -20,4 +20,15 @@
     update_cache: yes
     
 - name: "configure server and start pm2."
-  raw: cd /home/ubuntu/sarahlyne/backend/; sudo npm install; sudo npm install -g typescript ts-node; pm2 start npm -- run start
+  become: true
+  command: |
+    cd /home/ubuntu/sarahlyne/backend/
+    npm install
+    npm install -g typescript ts-node
+    npm install package.json 
+
+  - name: "Start backend with pm2"
+    become: true
+    command: pm2 start npm -- run start
+    args:
+      chdir: /home/ubuntu/sarahlyne/backend/dist
