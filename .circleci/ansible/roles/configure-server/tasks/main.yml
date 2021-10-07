@@ -21,11 +21,13 @@
     
 - name: "configure server."
   become: true
-  working_directory: /home/ubuntu/sarahlyne/backend/
   command: |
     npm install
     npm install -g typescript ts-node
     npm install package.json 
+  args:
+    chdir: /home/ubuntu/sarahlyne/backend/
+    
 
 - name: "Start backend with pm2"
   become: true
