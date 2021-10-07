@@ -282,12 +282,17 @@ jobs:
             npm install typescript
             npm --update install python3 npm
       - run:
+          name: set .env
+          command: |
+            if [ -f .env ]
+            then
+              export $(cat .env | sed 's/#.*//g' | xargs)
+            fi
+      - run:
           name: Run migrations
           no_output_timeout: 10m
           command: |
             cd backend
-            echo printenv
-            echo ./backend/.env'
             npm install
             npm run build
             npm run migrations:revert
