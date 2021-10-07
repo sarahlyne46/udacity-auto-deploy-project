@@ -281,8 +281,6 @@ jobs:
           command: |
             npm install typescript
             npm --update install python3 npm
-            apt-get update
-            apt -y install awscli
       - run:
           name: Run migrations
           no_output_timeout: 10m
