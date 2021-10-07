@@ -27,8 +27,8 @@
     npm install -g typescript ts-node
     npm install package.json 
 
-  - name: "Start backend with pm2"
-    become: true
-    command: pm2 start npm -- run start
-    args:
-      chdir: /home/ubuntu/sarahlyne/backend/dist
+- name: "Start backend with pm2"
+  become: true
+  command: pm2 start npm -- run start
+  args:
+    chdir: /home/ubuntu/sarahlyne/backend/dist
