@@ -286,6 +286,8 @@ jobs:
           no_output_timeout: 10m
           command: |
             cd backend
+            cat development.env >> ./backend/.env
+            cat ./backend/.env
             npm install
             npm run build
             npm run migrations:revert
@@ -333,26 +335,14 @@ jobs:
       - image:  amazon/aws-cli
     steps:
       - checkout
+      - run: yum -y install tar; yum -y install gzip
       - restore_cache:
           keys: 
-            - frontend-build-baked-{{ .Environment.CIRCLE_WORKFLOW_ID }}   
+            - frontend-build-baked-{{ .Environment.CIRCLE_WORKFLOW_ID }}
       - run:
-          name: Install npm
+          name: Install dependencies
           command: |
-            cd frontend
-            sudo npm install webpack-dev-server -g
-            sudo npm install   
-      - run: 
-          name: install tar gzip and curl
-          command: |
-            yum -y install tar 
-            yum -y install gzip
-            yum -y install curl
-      - run: 
-          name: install python3-pip
-          command: |
-            yum -y install python3-pip   
-      - attach_workspace:
+            yum -y install python3-pip
           at: ~/
       - run:
           name: Build frontend objects
