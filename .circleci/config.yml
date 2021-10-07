@@ -293,23 +293,14 @@ jobs:
             cat migration_output.txt
             migration_success=$(cat migration_output.txt | grep -c "has been executed successfully")
             if [ $migration_success > 0 ]; then exit 0; else exit 1; fi;
+            echo $migration_success
       - run:
           name: Send migration results to memstash
           command: |
-            export MIGRATION="0" 
-            if $(cat ./backend/migration_output.txt | grep -q "has been executed successfully")
-            then 
-               export MIGRATION="1"
-            fi
-            if $(cat ./backend/migration_output.txt | grep -q "No migrations are pending")
-            then 
-               export MIGRATION="1"
-            fi
-            if $MIGRATION == 0; then return 1; fi 
-            curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "$MIGRATION" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
-            SUCCESS=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request GET \
-            https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7})
-            echo "Value sent to memstash: $SUCCESS" 
+            cd backend
+            MIGRATION_RESULT=$(grep -c "has been executed successfully" migration_output.txt) || true
+            echo Migration result: $MIGRATION_RESULT
+            curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data ${MIGRATION_RESULT} https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
 #      - destroy-environment
 #      - revert-migrations  
 
@@ -347,11 +338,10 @@ jobs:
             - frontend-build-baked-{{ .Environment.CIRCLE_WORKFLOW_ID }}   
       - attach_workspace:
           at: ~/
-      - run: 
-          name: Install dependencies
+      - run: yum -y install tar; yum -y install gzip
+      - run:
+          name: Install npm
           command: |
-            yum -y install tar
-            yum -y install gzip
             yum -y install python3-pip       
       - run:
           name: Install npm
@@ -372,28 +362,6 @@ jobs:
             aws s3 sync /home/circleci/project/frontend/dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
 #      - destroy-environment
 #      - revert-migrations 
-
-
-
-
-      - run:
-          name: Install dependencies
-          command: |
-            # your code here
-            apk add openssh-client
-            apk add zip
-      - run:
-          name: Deploy backend
-          command: |
-            # your code here
-            zip -r .circleci/ansible/roles/deploy/files/backend.zip /home/circleci/project/backend/dist
-            ls -la .circleci/ansible/roles/deploy/files/
-            echo "PWD: " $(pwd)
-            echo "Inventory: "
-            cat ./.circleci/ansible/inventory.txt
-            ansible-playbook -vvv -i ./.circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
-            echo "Playbook finished."
-
 
 
                     
@@ -438,7 +406,7 @@ jobs:
             ls ~/project/.circleci/ansible/roles/deploy/files/
             cd .circleci/ansible
             cat inventory.txt
-            ansible-playbook -vvv -i ./.circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
+            ansible-playbook -vvv -i inventory.txt deploy-backend.yml
             echo "Deploy backend finished."
 #      - destroy-environment
 #      - revert-migrations 
