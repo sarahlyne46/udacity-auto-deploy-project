@@ -286,8 +286,8 @@ jobs:
           no_output_timeout: 10m
           command: |
             cd backend
-            cat development.env >> ./backend/.env
-            cat ./backend/.env
+            echo printenv
+            echo ./backend/.env'
             npm install
             npm run build
             npm run migrations:revert
