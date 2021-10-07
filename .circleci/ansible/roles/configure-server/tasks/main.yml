@@ -19,10 +19,10 @@
     state: latest
     update_cache: yes
     
-- name: "configure server and start pm2."
+- name: "configure server."
   become: true
+  working_directory: /home/ubuntu/sarahlyne/backend/
   command: |
-    cd /home/ubuntu/sarahlyne/backend/
     npm install
     npm install -g typescript ts-node
     npm install package.json 
