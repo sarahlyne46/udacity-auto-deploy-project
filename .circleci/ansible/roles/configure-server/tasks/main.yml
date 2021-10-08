@@ -4,8 +4,10 @@
     dest: ./
     src: ./
     
-#- name: "Setup env in backend"
-#  raw: cp /root/project/backend/.env /home/ubuntu/sarahlyne/backend/    
+- name: "Setup env in backend"
+  copy: 
+    src: /root/project/backend/
+    dest: /home/ubuntu/backend/      
   
 - name: "upgrade software"
   become: true
@@ -26,11 +28,11 @@
     npm install -g typescript ts-node
     npm install package.json 
   args:
-    chdir: /home/ubuntu/sarahlyne/backend/
+    chdir: /home/ubuntu/backend/
     
 
 - name: "Start backend with pm2"
   become: true
   command: pm2 start npm -- run start
   args:
-    chdir: /home/ubuntu/sarahlyne/backend/
+    chdir: /home/ubuntu/backend/
