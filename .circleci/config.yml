@@ -249,7 +249,7 @@ jobs:
             tar -czvf backend.tar.gz dist
             mkdir -p ~/project/.circleci/ansible/roles/configure-server/files/
             mv backend.tar.gz  ~/project/.circleci/ansible/roles/configure-server/files/
-
+            cp -f ~/project/backend/package.json  ~/project/.circleci/ansible/roles/configure-server/files/
       - run:
           name: configure server
           no_output_timeout: 30m
