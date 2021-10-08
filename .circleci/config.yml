@@ -337,21 +337,15 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: travnels/circleci-nodejs-awscli:latest # information for this taken from https://github.com/travnels/circleci-nodejs-awscli
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - run:
-          name: Install npm
+          name: Install dependencies
           command: |
-            cd frontend
-            sudo npm install      
-      - run:
-          name: Install dependecies
-          command: |
-            yum -y install curl
-            yum -y install tar
-            yum -y install gzip
-            yum -y install python3-pip
+            apk add --update tar gzip openssh-client ansible nodejs npm curl zip unzip
+            pip install awscli
+            ansible-galaxy install weareinteractive.environment
       - restore_cache:
           keys: 
             - frontend-build-baked-{{ .Environment.CIRCLE_WORKFLOW_ID }}
