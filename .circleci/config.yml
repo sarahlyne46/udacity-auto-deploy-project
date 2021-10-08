@@ -244,21 +244,24 @@ jobs:
           name: configure server
           no_output_timeout: 30m
           command: |
-            echo "" > ./backend/.env
-            echo "NODE_ENV=local" >> ./backend/.env
+            echo "" > "./backend/.env"
+            echo "NODE_ENV=local" >> "./backend/.env"
             echo "VERSION=1" >> ./backend/.env
-            echo "TYPEORM_ENTITIES=$TYPEORM_ENTITIES" >> ./backend/.env
-            echo "TYPEORM_HOST=$TYPEORM_HOST" >> ./backend/.env
-            echo "TYPEORM_PORT=$TYPEORM_PORT" >> ./backend/.env
-            echo "TYPEORM_USERNAME=$TYPEORM_USERNAME" >> ./backend/.env
-            echo "TYPEORM_PASSWORD=$TYPEORM_PASSWORD" >> ./backend/.env
-            echo "TYPEORM_DATABASE=$TYPEORM_DATABASE" >> ./backend/.env
-            echo "TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS" >> ./backend/.env
-            echo "TYPEORM_CONNECTION=$TYPEORM_CONNECTION" >> ./backend/.env
+            echo "TYPEORM_CONNECTION=$TYPEORM_CONNECTION" >> "./backend/.env"
+            echo "TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS_DIR" >> "./backend/.env"
+            echo "TYPEORM_ENTITIES=$TYPEORM_ENTITIES" >> "./backend/.env"
+            echo "TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS" >> "./backend/.env"
+            echo "TYPEORM_HOST=$TYPEORM_HOST" >> "./backend/.env"
+            echo "TYPEORM_PORT=$TYPEORM_PORT" >> "./backend/.env"
+            echo "TYPEORM_USERNAME=$TYPEORM_USERNAME" >> "./backend/.env"
+            echo "TYPEORM_PASSWORD=$TYPEORM_PASSWORD" >> "./backend/.env"
+            echo "TYPEORM_DATABASE=$TYPEORM_DATABASE" >> "./backend/.env"
             cat ./backend/.env
+
             cp ./backend/.env .circleci/ansible/roles/configure-server/files
             cd .circleci/ansible
-            ansible-playbook -vvv -i inventory.txt configure-server.yml 
+            ansible-playbook -vvv -i inventory.txt configure-server.yml
+            
 #      - destroy-environment
 
   run-migrations: 
@@ -284,10 +287,19 @@ jobs:
       - run:
           name: set .env
           command: |
-            if [ -f .env ]
-            then
-              export $(cat .env | sed 's/#.*//g' | xargs)
-            fi
+            echo "" > "./backend/.env"
+            echo "NODE_ENV=local" >> "./backend/.env"
+            echo "VERSION=1" >> ./backend/.env
+            echo "TYPEORM_CONNECTION=$TYPEORM_CONNECTION" >> "./backend/.env"
+            echo "TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS_DIR" >> "./backend/.env"
+            echo "TYPEORM_ENTITIES=$TYPEORM_ENTITIES" >> "./backend/.env"
+            echo "TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS" >> "./backend/.env"
+            echo "TYPEORM_HOST=$TYPEORM_HOST" >> "./backend/.env"
+            echo "TYPEORM_PORT=$TYPEORM_PORT" >> "./backend/.env"
+            echo "TYPEORM_USERNAME=$TYPEORM_USERNAME" >> "./backend/.env"
+            echo "TYPEORM_PASSWORD=$TYPEORM_PASSWORD" >> "./backend/.env"
+            echo "TYPEORM_DATABASE=$TYPEORM_DATABASE" >> "./backend/.env"
+            cat ./backend/.env
       - run:
           name: Run migrations
           no_output_timeout: 10m
@@ -349,6 +361,27 @@ jobs:
       - restore_cache:
           keys: 
             - frontend-build-baked-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+      - run:      
+          name: Add API_URL into front-end
+          command: |
+            export BACKEND_IP="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/BackendUrl)"
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+            echo ENVIROMENT=production > "frontend/.env"
+            echo NODE_ENV=production > "frontend/.env"
+            echo API_URL="${API_URL}" >> "frontend/.env"
+            cat frontend/.env 
+            npm install
+            cd frontend
+            npm i
+            npm run build
+      - run:  
+         name: configure server
+         command: |
+           cd frontend
+           npm install
+           npm install -g typescript ts-node
+           npm install package.json      
       - run:
           name: Build frontend objects
           command: |
