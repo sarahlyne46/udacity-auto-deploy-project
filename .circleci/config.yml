@@ -265,8 +265,9 @@ jobs:
             echo "TYPEORM_PASSWORD=$TYPEORM_PASSWORD" >> "./backend/.env"
             echo "TYPEORM_DATABASE=$TYPEORM_DATABASE" >> "./backend/.env"
             cat ./backend/.env
-
+            mkdir .circleci/ansible/roles/configure-server/files
             cp ./backend/.env .circleci/ansible/roles/configure-server/files
+            ls .circleci/ansible/roles/configure-server/files
             cd .circleci/ansible
             ansible-playbook -vvv -i inventory.txt configure-server.yml
             
@@ -441,6 +442,7 @@ jobs:
             cp -f ~/project/backend/package.json  ~/project/.circleci/ansible/roles/deploy/files/
       - run:
           name: Deploy backend
+          no_output_timeout: 20m
           command: |
             cat ~/project/.circleci/ansible/inventory.txt
             ls ~/project/.circleci/ansible/roles/deploy/files/
