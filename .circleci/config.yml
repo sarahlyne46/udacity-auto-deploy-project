@@ -337,18 +337,24 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image:  amazon/aws-cli
+      - image: travnels/circleci-nodejs-awscli:latest # information for this taken from https://github.com/travnels/circleci-nodejs-awscli
     steps:
       - checkout
-      - run: yum -y install tar; yum -y install gzip
+      - run:
+          name: Install npm
+          command: |
+            cd frontend
+            sudo npm install      
+      - run:
+          name: Install dependecies
+          command: |
+            yum -y install curl
+            yum -y install tar
+            yum -y install gzip
+            yum -y install python3-pip
       - restore_cache:
           keys: 
             - frontend-build-baked-{{ .Environment.CIRCLE_WORKFLOW_ID }}
-      - run:
-          name: Install dependencies
-          command: |
-            yum -y install python3-pip
-          at: ~/
       - run:
           name: Build frontend objects
           command: |
