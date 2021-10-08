@@ -27,11 +27,7 @@
     src: package.json
     dest: /home/ubuntu/dist      
 
-- name: Copy .env file
-  become: true
-  copy:
-    src: /backend/
-    dest: /home/ubuntu/backend      
+    
     
 - name: "Install dependencies for project"
   shell: |
