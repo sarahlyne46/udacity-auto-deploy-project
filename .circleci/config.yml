@@ -265,7 +265,6 @@ jobs:
             echo "TYPEORM_PASSWORD=$TYPEORM_PASSWORD" >> "./backend/.env"
             echo "TYPEORM_DATABASE=$TYPEORM_DATABASE" >> "./backend/.env"
             cat ./backend/.env
-            mkdir .circleci/ansible/roles/configure-server/files
             cp ./backend/.env .circleci/ansible/roles/configure-server/files
             ls .circleci/ansible/roles/configure-server/files
             cd .circleci/ansible
