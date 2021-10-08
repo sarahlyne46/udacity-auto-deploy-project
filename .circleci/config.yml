@@ -243,8 +243,6 @@ jobs:
       - run:
           name: collate backend  files
           command: |
-            npm i 
-            npm run build
             ls backend
             tar -czvf backend.tar.gz dist
             mkdir -p ~/project/.circleci/ansible/roles/configure-server/files/
