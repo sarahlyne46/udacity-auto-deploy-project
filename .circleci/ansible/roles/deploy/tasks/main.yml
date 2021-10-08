@@ -30,7 +30,7 @@
 - name: Copy .env file
   become: true
   copy:
-    src: /backend/.env
+    src: /backend/
     dest: /home/ubuntu/backend      
     
 - name: "Install dependencies for project"
