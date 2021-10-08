@@ -241,6 +241,16 @@ jobs:
             cd .circleci/ansible
             cat inventory.txt
       - run:
+          name: collate backend  files
+          command: |
+            npm i 
+            npm run build
+            ls backend
+            tar -czvf backend.tar.gz dist
+            mkdir -p ~/project/.circleci/ansible/roles/configure-server/files/
+            mv backend.tar.gz  ~/project/.circleci/ansible/roles/configure-server/files/
+
+      - run:
           name: configure server
           no_output_timeout: 30m
           command: |
