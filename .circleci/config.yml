@@ -32,7 +32,6 @@ commands:
             aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
             aws cloudformation delete-stack --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
           
-
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     steps:
@@ -49,7 +48,6 @@ commands:
               npm run migrations:revert
               exit 1
             fi
-
             
 jobs:
   build-frontend:
@@ -105,7 +103,6 @@ jobs:
             ls -la
             cd frontend
             npm run test
-
   test-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -120,8 +117,6 @@ jobs:
             ls -la
             cd backend
             npm run test
-
-
   scan-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -241,14 +236,6 @@ jobs:
             cd .circleci/ansible
             cat inventory.txt
       - run:
-          name: collate backend  files
-          command: |
-            ls backend
-            tar -czvf backend.tar.gz backend
-            mkdir -p ~/project/.circleci/ansible/roles/configure-server/files/
-            mv backend.tar.gz  ~/project/.circleci/ansible/roles/configure-server/files/
-            cp -f ~/project/backend/package.json  ~/project/.circleci/ansible/roles/configure-server/files/
-      - run:
           name: configure server
           no_output_timeout: 30m
           command: |
@@ -266,7 +253,6 @@ jobs:
             echo "TYPEORM_DATABASE=$TYPEORM_DATABASE" >> "./backend/.env"
             cat ./backend/.env
             cp ./backend/.env .circleci/ansible/roles/configure-server/files
-            ls .circleci/ansible/roles/configure-server/files
             cd .circleci/ansible
             ansible-playbook -vvv -i inventory.txt configure-server.yml
             
@@ -425,7 +411,6 @@ jobs:
             apk add --update tar gzip openssh-client ansible nodejs npm curl zip unzip
             pip install awscli
             ansible-galaxy install weareinteractive.environment
-
       - run: cat   .circleci/ansible/inventory.txt
       - run:
           name: collate backend deploy files
@@ -441,7 +426,6 @@ jobs:
             cp -f ~/project/backend/package.json  ~/project/.circleci/ansible/roles/deploy/files/
       - run:
           name: Deploy backend
-          no_output_timeout: 20m
           command: |
             cat ~/project/.circleci/ansible/inventory.txt
             ls ~/project/.circleci/ansible/roles/deploy/files/
@@ -500,7 +484,6 @@ jobs:
             export BACKEND_IP="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/BackendUrl)"
             export API_URL="http://${BACKEND_IP}:3030/api/status"
             echo "${API_URL}"
-
             if curl -s ${API_URL}
             then 
               exit 0
@@ -528,7 +511,6 @@ jobs:
             yum -y install tar
             yum -y install gzip
             yum -y install python3-pip
-
       - run:
           name: Update cloudfront distribution
           command: |
@@ -544,7 +526,6 @@ jobs:
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             fi                
-
    
 #      - destroy-environment
 #      - revert-migrations   
@@ -620,7 +601,7 @@ workflows:
       - deploy-backend:
           requires: [run-migrations]
       - smoke-test-backend:
-          requires: [deploy-backend, deploy-frontend, smoke-test-frontend]
+          requires: [deploy-backend, deploy-frontend]
       - smoke-test-frontend:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
