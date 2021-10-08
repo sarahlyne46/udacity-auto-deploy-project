@@ -4,11 +4,12 @@
     path: /home/ubuntu/backend
     state: directory
     
-- name: Copy backend files
-  become: yes
-  synchronize:
-    src: ../../backend
-    dest: /home/ubuntu   
+- name: Unzip backend folder
+  shell: |
+    cd /home/ubuntu
+    tar -xzvf backend.tar.gz
+    rm -rf backend.tar.gz
+
 
   
 - name: "upgrade software"
