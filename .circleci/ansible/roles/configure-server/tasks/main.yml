@@ -4,13 +4,6 @@
     dest: ./
     src: ./
 
-
-- name: Unzip backend folder
-  shell: |
-    cd /home/ubuntu
-    tar -xzvf backend.tar.gz
-    rm -rf backend.tar.gz
-
   
 - name: "upgrade software"
   become: true
