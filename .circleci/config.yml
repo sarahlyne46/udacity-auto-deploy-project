@@ -234,11 +234,7 @@ jobs:
           name: check inventory file
           command: |
             cd .circleci/ansible
-            cat inventory.txt
-      - run:
-          name: Make backend directory
-          command: |
-            mkdir /home/ubuntu/backend/            
+            cat inventory.txt        
       - run:
           name: configure server
           no_output_timeout: 30m
