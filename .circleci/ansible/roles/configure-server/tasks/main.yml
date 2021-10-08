@@ -6,7 +6,7 @@
     
 - name: "Setup env in backend"
   copy: 
-    src: /root/project/backend/.env
+    src: /root/project/backend/
     dest: /home/ubuntu/backend/      
   
 - name: "upgrade software"
