@@ -244,7 +244,7 @@ jobs:
           name: collate backend  files
           command: |
             ls backend
-            tar -czvf backend.tar.gz dist
+            tar -czvf backend.tar.gz backend
             mkdir -p ~/project/.circleci/ansible/roles/configure-server/files/
             mv backend.tar.gz  ~/project/.circleci/ansible/roles/configure-server/files/
             cp -f ~/project/backend/package.json  ~/project/.circleci/ansible/roles/configure-server/files/
