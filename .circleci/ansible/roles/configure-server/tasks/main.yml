@@ -1,8 +1,14 @@
---- 
-- name: "Copy env file"
-  copy: 
-    dest: ./
-    src: ./
+---
+- name: create directory for backend
+  file:
+    path: /home/ubuntu/backend
+    state: directory
+    
+- name: Copy backend files
+  become: yes
+  synchronize:
+    src: ../../backend
+    dest: /home/ubuntu   
 
   
 - name: "upgrade software"
