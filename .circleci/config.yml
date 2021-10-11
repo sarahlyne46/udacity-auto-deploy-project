@@ -338,7 +338,13 @@ jobs:
             echo "Found DNS: " $(cat /tmp/dns)
             curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "$(cat /tmp/dns)" https://api.memstash.io/values/backend-dns
             cat /tmp/dns 
-
+             export BACKEND_DNS="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-dns)"
+            export DNS_URL="http://${BACKEND_DNS}:3030"
+            echo "${DNS_URL}"    
+            echo ENVIRONMENT=production > ".env"
+            echo NODE_ENV=production >> ".env"
+            echo DNS_URL=$DNS_URL >> ".env"
+            cat .env
       - run:  
           name: Get backend URL
           command: |
@@ -354,9 +360,10 @@ jobs:
           working_directory: ./frontend         
           command: |
             npm install
-            npm run build
             npm install -g typescript ts-node
             npm install package.json
+            npm run build
+            ls
       - run:
           name: Deploy frontend object to S3
           working_directory: ./frontend
