@@ -329,14 +329,22 @@ jobs:
           command: |
             curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
             yum -y install nodejs
+      - run:  
+          name: Get backend DNS
+          command: |
+            export WorkFlowID="${CIRCLE_WORKFLOW_ID:0:7}"
+            echo "Workflow id: $WorkFlowID"
+            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicDnsName' --filters "Name=tag:Name,Values=backend-$WorkFlowID" --output text > /tmp/dns
+            echo "Found DNS: " $(cat /tmp/dns)
+            curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "$(cat /tmp/dns)" https://api.memstash.io/values/backend-dns
+            cat /tmp/dns 
 
       - run:  
           name: Get backend URL
           command: |
-            public-backend-dns=$(aws ec2 describe-instances --filters Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7} --query "Reservations[*].Instances[0].PublicDnsName" --output text)
-            echo "Public DNS: ${public-backend-dns}"
-            echo ${CIRCLE_WORKFLOW_ID}
-            export API_URL="http://${public-backend-dns}:3030"
+            export BACKEND_IP="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-ip)"
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"    
             echo ENVIRONMENT=production > ".env"
             echo NODE_ENV=production >> ".env"
             echo API_URL=$API_URL >> ".env"
