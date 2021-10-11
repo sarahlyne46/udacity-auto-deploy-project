@@ -1,41 +1,20 @@
 ---
-- name: create directory for backend
-  file:
-    path: /home/ubuntu/backend
-    state: directory
-    
-- name: Unzip backend folder
-  shell: |
-    cd /home/ubuntu
-    tar -xzvf backend.tar.gz
-    rm -rf backend.tar.gz
-
-
-  
-- name: "upgrade software"
+- name: "upgrade packages."
   become: true
   apt:
     upgrade: "yes"
 
-- name: "install dependencies"
+- name: "install dependencies."
   become: true
   apt:
     name: ["nodejs", "npm"]
     state: latest
     update_cache: yes
-    
-- name: "configure server."
-  become: true
-  command: |
-    npm install
-    npm install -g typescript ts-node
-    npm install package.json 
-  args:
-    chdir: /home/ubuntu/backend/
-    
 
-- name: "Start backend with pm2"
+- name: "install pm2"
   become: true
-  command: pm2 start npm -- run start
-  args:
-    chdir: /home/ubuntu/backend/
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
