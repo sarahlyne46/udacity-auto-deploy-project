@@ -249,7 +249,7 @@ jobs:
           no_output_timeout: 30m
           working_directory: ./.circleci/ansible
           command: |
-            backend_ip=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request GET https://api.memstash.io/values/backend_ip)
+            backend_ip=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request GET https://api.memstash.io/values/backend-ip)
             cat inventory.txt
             echo Backend IP: $backend_ip
             ansible-playbook -i inventory.txt configure-server.yml --extra-vars "backend_ip=$backend_ip"
@@ -265,10 +265,6 @@ jobs:
           name: npm install
           working_directory: ./backend
           command: npm install
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .circleci/backend
       - run:
           name: install dependencies
           command: |
@@ -309,7 +305,7 @@ jobs:
           name: Add API_URL into front-end
           working_directory: ./frontend             
           command: |
-            export BACKEND_IP="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend_ip)"
+            export BACKEND_IP="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-ip)"
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             npm install
