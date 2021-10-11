@@ -333,9 +333,7 @@ jobs:
       - run:  
           name: Get backend URL
           command: |
-            public-backend-dns=$(aws ec2 describe-instances --region us-east-1 \
-            --filters Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7} \
-            --query "Reservations[*].Instances[0].PublicDnsName" --output text)
+            public-backend-dns=$(aws ec2 describe-instances --filters Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7} --query "Reservations[*].Instances[0].PublicDnsName" --output text)
             echo "Public DNS: ${public-backend-dns}"
             echo ${CIRCLE_WORKFLOW_ID}
             export API_URL="http://${public-backend-dns}:3030"
@@ -419,7 +417,6 @@ jobs:
           working_directory: ./.circleci/ansible          
           command: |
             cat inventory.txt
-            ls roles/deploy/files/
             ansible-playbook -i inventory.txt deploy-backend.yml
             echo "Deploy backend finished."
 #      - destroy-environment
