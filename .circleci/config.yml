@@ -335,7 +335,7 @@ jobs:
             npm run build
             ls
       - run:
-          name: List backend files
+          name: List frontend files
           working_directory: ./frontend/dist
           command: |
             ls
@@ -429,7 +429,7 @@ jobs:
       - run:
           name: Frontend smoke test.
           command: |
-            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com"
+            URL="https://udapeople-${CIRCLE_WORKFLOW_ID}.s3-us-east-1.amazonaws.com/index.html"
             echo $URL
             
             if curl -s ${URL} | grep "Welcome"
