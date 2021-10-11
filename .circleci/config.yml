@@ -281,7 +281,7 @@ jobs:
           name: Send migration results to memstash
           working_directory: ./backend          
           command: |
-            if grep -q "has been executed successfully" mmigration_output.txt
+            if grep -q "has been executed successfully" migration_output.txt
             then
               echo "Migration was successful!"
               curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "success" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
@@ -315,14 +315,21 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: travnels/circleci-nodejs-awscli:latest # information for this taken from https://github.com/travnels/circleci-nodejs-awscli
+      - image: amazon/aws-cli
     steps:
       - checkout
+      - run: 
+          name: install tar gzip and curl
+          command: |
+            yum -y install tar 
+            yum -y install gzip
+            yum -y install curl
       - run:
           name: Install dependencies
           command: |
-            apk add --update tar gzip openssh-client ansible nodejs npm curl zip unzip
-            ansible-galaxy install weareinteractive.environment
+            curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
+            yum -y install nodejs
+
       - run:  
           name: Get backend URL
           command: |
@@ -406,8 +413,7 @@ jobs:
             cat .env
             npm install
             npm run build            
-            ls backend
-            ls backend/dist
+            ls
       - run:
           name: Deploy backend
           working_directory: ./.circleci/ansible          
@@ -464,7 +470,7 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            export BACKEND_IP="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/BackendUrl)"
+            export BACKEND_IP="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-ip)"
             export API_URL="http://${BACKEND_IP}:3030/api/status"
             echo "${API_URL}"
             if curl -s ${API_URL}
