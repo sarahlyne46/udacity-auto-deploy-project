@@ -292,27 +292,6 @@ jobs:
 #      - destroy-environment
 #      - revert-migrations
 
-  capture-backend-ip-for-frontend:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - run:
-          name: Install Python3
-          command: |
-            npm --update install python3 npm
-      - run:
-          name: Add API_URL into front-end
-          working_directory: ./frontend             
-          command: |
-            export BACKEND_IP="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-ip)"
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
-            npm install
-            npm i
-            npm run build
-#      - destroy-environment
-
   deploy-frontend:
     docker:
       - image: amazon/aws-cli
@@ -338,23 +317,14 @@ jobs:
             echo "Found DNS: " $(cat /tmp/dns)
             curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "$(cat /tmp/dns)" https://api.memstash.io/values/backend-dns
             cat /tmp/dns 
-             export BACKEND_DNS="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-dns)"
+            export BACKEND_DNS="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-dns)"
             export DNS_URL="http://${BACKEND_DNS}:3030"
             echo "${DNS_URL}"    
             echo ENVIRONMENT=production > ".env"
             echo NODE_ENV=production >> ".env"
             echo DNS_URL=$DNS_URL >> ".env"
             cat .env
-      - run:  
-          name: Get backend URL
-          command: |
-            export BACKEND_IP="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-ip)"
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"    
-            echo ENVIRONMENT=production > ".env"
-            echo NODE_ENV=production >> ".env"
-            echo API_URL=$API_URL >> ".env"
-            cat .env
+
       - run:  
           name: configure server
           working_directory: ./frontend         
@@ -557,6 +527,7 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
+
       - deploy-infrastructure:
           requires: [test-backend, scan-backend, test-frontend, scan-frontend]
           filters:
@@ -571,17 +542,18 @@ workflows:
           requires: [configure-infrastructure]
           filters:
             branches:
-              only: [master]
-      - capture-backend-ip-for-frontend:
-           requires: [run-migrations]      
-      - deploy-frontend:
-          requires: [capture-backend-ip-for-frontend]
+              only: [master]   
+
       - deploy-backend:
           requires: [run-migrations]
+      - deploy-frontend:
+          requires: [deploy-backend]
+
       - smoke-test-backend:
           requires: [deploy-backend, deploy-frontend]
       - smoke-test-frontend:
           requires: [deploy-backend, deploy-frontend]
+          
       - cloudfront-update:
           requires: [smoke-test-backend, smoke-test-frontend]      
       - cleanup:
