@@ -361,7 +361,7 @@ jobs:
           name: Deploy frontend object to S3
           working_directory: ./frontend
           command: |
-            aws s3 cp ./dist "s3://udapeople-${CIRCLE_WORKFLOW_ID}" --recursive
+            aws s3 cp ./dist s3://udapeople-${CIRCLE_WORKFLOW_ID} --recursive
 
 #      - destroy-environment
 #      - revert-migrations 
