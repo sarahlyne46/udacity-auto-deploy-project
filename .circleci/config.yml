@@ -268,7 +268,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - backend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}        
+            - .circleci/backend
       - run:
           name: install dependencies
           command: |
