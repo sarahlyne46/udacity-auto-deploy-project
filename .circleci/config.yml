@@ -368,7 +368,7 @@ jobs:
           name: List backend files
           working_directory: ./frontend/dist
           command: |
-          ls
+            ls
       - run:
           name: Deploy frontend object to S3
           working_directory: ./frontend
