@@ -365,10 +365,15 @@ jobs:
             npm run build
             ls
       - run:
+          name: List backend files
+          working_directory: ./frontend/dist
+          command: |
+          ls
+      - run:
           name: Deploy frontend object to S3
           working_directory: ./frontend
           command: |
-            aws s3 sync /home/circleci/project/frontend/dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
+            aws s3 sync ./dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
 
 #      - destroy-environment
 #      - revert-migrations 
