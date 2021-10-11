@@ -198,9 +198,9 @@ jobs:
             cat /tmp/ip >> ./.circleci/ansible/inventory.txt
             cat ./.circleci/ansible/inventory.txt
       - persist_to_workspace:
-          root: ~/
+          root: .
           paths:
-            - /project/.circleci/ansible/inventory.txt
+            - .circleci/ansible/inventory.txt
 #      - destroy-environment
 
         
