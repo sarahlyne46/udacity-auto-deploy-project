@@ -479,7 +479,7 @@ jobs:
             echo Update CloudFront  
             aws cloudformation update-stack \
             --use-previous-template \
-            --stack-name udapeople-sarahlyne46 \
+            --stack-name udapeople-cloudfront \
             --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID:0:7},UsePreviousValue=false               
             
 #      - destroy-environment
