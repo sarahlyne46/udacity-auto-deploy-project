@@ -208,7 +208,6 @@ jobs:
     docker:
       - image: python:3.9.0-alpine
     environment:
-      ENVIRONMENT: "production"
       TYPEORM_CONNECTION: ${TYPEORM_CONNECTION}
       TYPEORM_HOST: ${TYPEORM_HOST}
       TYPEORM_USERNAME: ${TYPEORM_USERNAME}
@@ -321,8 +320,6 @@ jobs:
             export BACKEND_DNS="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-dns)"
             export DNS_URL="http://${BACKEND_DNS}:3030"
             echo "${DNS_URL}"    
-            echo ENVIRONMENT=production > ".env"
-            echo NODE_ENV=production >> ".env"
             echo DNS_URL=$DNS_URL >> ".env"
             cat .env
 
@@ -384,7 +381,6 @@ jobs:
           name: Add Environment variables to .env file
           working_directory: ./backend
           command: |
-            echo ENVIROMENT=production >> ".env"
             echo TYPEORM_CONNECTION=postgres >> ".env"
             echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> ".env"
             echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> ".env"
