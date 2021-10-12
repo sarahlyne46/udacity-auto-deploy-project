@@ -275,6 +275,7 @@ jobs:
           working_directory: ./backend          
           no_output_timeout: 10m
           command: |
+            npm run migrations:revert
             npm run migrations >> migration_output.txt
             cat migration_output.txt
       - run:
@@ -484,9 +485,6 @@ jobs:
             --use-previous-template \
             --stack-name udapeople-sarahlyne46 \
             --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID:0:7},UsePreviousValue=false               
-            
-            curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "$OldWorkflowID" https://api.memstash.io/values/OldWorkflowID
-            echo https://api.memstash.io/values/OldWorkflowID
             
 #      - destroy-environment
 #      - revert-migrations   
