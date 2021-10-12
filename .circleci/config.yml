@@ -429,15 +429,11 @@ jobs:
       - run:
           name: Frontend smoke test.
           command: |
-            URL="https://udapeople-${CIRCLE_WORKFLOW_ID}.s3-us-east-1.amazonaws.com/index.html"
+            URL="https://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-us-east-1.amazonaws.com/index.html"
             echo $URL
             
-            if curl -s ${URL} | grep "Welcome"
-            then
-              return 1
-            else
-              return 0
-            fi
+            curl -s ${URL} 
+
 #      - destroy-environment
 #      - revert-migrations     
 
@@ -456,15 +452,10 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            export BACKEND_IP="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-ip)"
-            export API_URL="http://${BACKEND_IP}:3030/api/status"
-            echo "${API_URL}"
-            if curl -s ${API_URL}
-            then 
-              exit 0
-            else 
-              exit 1
-            fi
+            export BACKEND_DNS="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-dns)"
+            export DNS_URL="http://${BACKEND_DNS}:3030/api/status"
+            echo "${DNS_URL}"
+            curl ${DNS_URL}
 #      - destroy-environment
 #      - revert-migrations      
 
@@ -486,7 +477,7 @@ jobs:
             aws cloudformation deploy \
               --template-file cloudfront.yml \
               --stack-name udapeople-sarahlyne46 \
-              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
+              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
 #      - destroy-environment
 #      - revert-migrations   
@@ -504,9 +495,9 @@ jobs:
           working_directory: ./.circleci/files
           command: |
             old_workflow_id=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request GET https://api.memstash.io/values/workflow_id)
-            if [[ "${CIRCLE_WORKFLOW_ID}" != "$old_workflow_id" ]]
+            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "$old_workflow_id" ]]
             then
-              echo "$old_workflow_id!=$CIRCLE_WORKFLOW_ID => Will delete old version!"
+              echo "$old_workflow_id!=$CIRCLE_WORKFLOW_ID:0:7 => Will delete old version!"
               aws s3 rm "s3://udapeople-${old_workflow_id}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${old_workflow_id}"
               aws cloudformation delete-stack --stack-name "udapeople-backend-${old_workflow_id}"
