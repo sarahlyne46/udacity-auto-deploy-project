@@ -303,11 +303,11 @@ jobs:
             yum -y install tar 
             yum -y install gzip
             yum -y install curl
-      - run:
-          name: Install dependencies
+      - run: 
+          name: install Dependencies
           command: |
             curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
-            yum -y install nodejs
+            yum install -y nodejs      
       - run:  
           name: Get backend DNS
           command: |
@@ -322,7 +322,6 @@ jobs:
             echo "${API_URL}"    
             echo API_URL=$API_URL >> ".env"
             cat .env
-
       - run:  
           name: configure server
           working_directory: ./frontend         
@@ -330,8 +329,9 @@ jobs:
             npm install
             npm install -g typescript ts-node
             npm install package.json
+            ls -la
+            cat .env
             npm run build
-            ls
       - run:
           name: List frontend files
           working_directory: ./frontend/dist
@@ -555,5 +555,5 @@ workflows:
           
       - cloudfront-update:
           requires: [smoke-test-backend, smoke-test-frontend]      
-      - cleanup:
-          requires: [cloudfront-update]
+#      - cleanup:
+#          requires: [cloudfront-update]
