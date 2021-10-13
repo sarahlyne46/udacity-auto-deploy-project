@@ -317,10 +317,10 @@ jobs:
             echo "Found DNS: " $(cat /tmp/dns)
             curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "$(cat /tmp/dns)" https://api.memstash.io/values/backend-dns
             cat /tmp/dns 
-            export BACKEND_DNS="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-dns)"
-            export DNS_URL="http://${BACKEND_DNS}:3030"
-            echo "${DNS_URL}"    
-            echo DNS_URL=$DNS_URL >> ".env"
+            export BACKEND_API="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-dns)"
+            export API_URL="http://${BACKEND_API}:3030"
+            echo "${API_URL}"    
+            echo API_URLL=$API_URL >> ".env"
             cat .env
 
       - run:  
