@@ -329,6 +329,7 @@ jobs:
             npm install
             npm install -g typescript ts-node
             npm install package.json
+            cat .env
             ls -la
             npm run build
       - run:
