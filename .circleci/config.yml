@@ -324,10 +324,10 @@ jobs:
           working_directory: ./frontend         
           command: |
             curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
-            sudo yum install -y nodejs
-            sudo npm install
-            sudo npm install -g typescript ts-node
-            sudo npm install package.json
+            yum install -y nodejs
+            npm install
+            npm install -g typescript ts-node
+            npm install package.json
             ls -la
             cat .env
             npm run build
