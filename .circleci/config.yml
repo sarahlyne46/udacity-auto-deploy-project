@@ -309,15 +309,15 @@ jobs:
             curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
             yum install -y nodejs      
       - run:  
-          name: Get backend DNS
+          name: Get backend API
           command: |
             export WorkFlowID="${CIRCLE_WORKFLOW_ID:0:7}"
             echo "Workflow id: $WorkFlowID"
-            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicDnsName' --filters "Name=tag:Name,Values=backend-$WorkFlowID" --output text > /tmp/dns
-            echo "Found DNS: " $(cat /tmp/dns)
-            curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "$(cat /tmp/dns)" https://api.memstash.io/values/backend-dns
-            cat /tmp/dns 
-            export BACKEND_API="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-dns)"
+            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicDnsName' --filters "Name=tag:Name,Values=backend-$WorkFlowID" --output text > /tmp/api
+            echo "Found API: " $(cat /tmp/api)
+            curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "$(cat /tmp/api)" https://api.memstash.io/values/backend-api
+            cat /tmp/api 
+            export BACKEND_API="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-api)"
             export API_URL="http://${BACKEND_API}:3030"
             echo "${API_URL}"    
             echo API_URL=$API_URL >> ".env"
@@ -448,10 +448,10 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            export BACKEND_DNS="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-dns)"
-            export DNS_URL="http://${BACKEND_DNS}:3030/api/status"
-            echo "${DNS_URL}"
-            curl ${DNS_URL}
+            export BACKEND_API="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-api)"
+            export API_URL="http://${BACKEND_API}:3030/api/status"
+            echo "${API_URL}"
+            curl ${API_URL}
 #      - destroy-environment
 #      - revert-migrations      
 
