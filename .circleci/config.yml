@@ -308,6 +308,9 @@ jobs:
           command: |
             curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
             yum -y install nodejs
+            npm install
+            npm install -g typescript ts-node
+            npm install package.json
       - run:  
           name: Get backend DNS
           command: |
@@ -319,7 +322,8 @@ jobs:
             cat /tmp/dns 
             export BACKEND_DNS="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-dns)"
             export DNS_URL="http://${BACKEND_DNS}:3030"
-            echo "${DNS_URL}"    
+            echo "${DNS_URL}"
+            cd frontend
             echo DNS_URL=$DNS_URL >> ".env"
             cat .env
 
@@ -327,11 +331,9 @@ jobs:
           name: configure server
           working_directory: ./frontend         
           command: |
-            npm install
-            npm install -g typescript ts-node
-            npm install package.json
+            ls -la
+            cat .env
             npm run build
-            ls
       - run:
           name: List frontend files
           working_directory: ./frontend/dist
@@ -555,5 +557,5 @@ workflows:
           
       - cloudfront-update:
           requires: [smoke-test-backend, smoke-test-frontend]      
-      - cleanup:
-          requires: [cloudfront-update]
+#      - cleanup:
+#          requires: [cloudfront-update]
