@@ -320,7 +320,7 @@ jobs:
             export BACKEND_API="$(curl -H 'token: da647fff-0676-4705-a4fd-bda47a1e6aaa' --request GET https://api.memstash.io/values/backend-dns)"
             export API_URL="http://${BACKEND_API}:3030"
             echo "${API_URL}"    
-            echo API_URLL=$API_URL >> ".env"
+            echo API_URL=$API_URL >> ".env"
             cat .env
 
       - run:  
