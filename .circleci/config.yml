@@ -330,7 +330,6 @@ jobs:
             npm install -g typescript ts-node
             npm install package.json
             ls -la
-            cat .env
             npm run build
       - run:
           name: List frontend files
