@@ -180,8 +180,7 @@ jobs:
             - .circleci/ansible/inventory.txt
 #      - destroy-environment
 
-           
-
+        
   configure-infrastructure:
     docker:
       - image: python:3.9.0-alpine
@@ -192,76 +191,62 @@ jobs:
       TYPEORM_PASSWORD: ${TYPEORM_PASSWORD}
       TYPEORM_DATABASE: ${TYPEORM_DATABASE}
       TYPEORM_PORT: ${TYPEORM_PORT}
-      TYPEORM_ENTITIES: ${TYPEORM_ENTITIES}         
+      TYPEORM_ENTITIES: ${TYPEORM_ENTITIES}      
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["35:4c:90:a3:89:25:77:28:63:78:e4:08:46:e4:1c:9b"]
+          fingerprints: ["35:4c:90:a3:89:25:77:28:63:78:e4:08:46:e4:1c:9b"]      
+      - attach_workspace:
+          at: .
       - run:
-          name: Add Environment variables to .env file
-          working_directory: ./backend
-          command: |
-            echo TYPEORM_CONNECTION=postgres >> ".env"
-            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> ".env"
-            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> ".env"
-            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> ".env"
-            echo TYPEORM_HOST=${TYPEORM_HOST} >> ".env"
-            echo TYPEORM_PORT=${TYPEORM_PORT} >> ".env"
-            echo TYPEORM_USERNAME=${TYPEORM_USERNAME} >> ".env"
-            echo TYPEORM_PASSWORD=${TYPEORM_PASSWORD} >> ".env"
-            echo TYPEORM_DATABASE=${TYPEORM_DATABASE} >> ".env"
-            cat .env
-      - run:
-          name: Install Ansible
+          name: Install ansible
           command: |
             apk add --update ansible
             ansible --version
-      
       - run:
-          name: Install Curl
+          name: Install curl
           command: |
             apk add --update curl
-      
       - run:
           name: check inventory file
           command: |
             cd .circleci/ansible
-            cat inventory.txt        
+            cat inventory.txt            
       - run:
-          name: Configure server
+          name: collate backend  files
+          command: |
+            ls backend       
+            tar -czvf backend.tar.gz backend
+            mkdir -p ~/project/.circleci/ansible/roles/configure-server/files/
+            mv backend.tar.gz  ~/project/.circleci/ansible/roles/configure-server/files/
+            cp -f ~/project/backend/package.json  ~/project/.circleci/ansible/roles/configure-server/files/
+      - run:
+          name: Configure backend server
+          no_output_timeout: 30m
+          working_directory: ./.circleci/ansible
           command: |
             backend_ip=$(curl -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request GET https://api.memstash.io/values/backend-ip)
-            cd .circleci/ansible/
-            export ANSIBLE_HOST_KEY_CHECKING=False
-            echo ${BACKEND_IP}
-            pwd
-            ls
-            echo ${BACKEND_IP} >> ./inventory.txt
-            cat ./inventory.txt
-            ansible-playbook -i inventory.txt configure-server.yml
-      
-  #     - destroy-environment 
-      # Here's where you will add some code to rollback on failure      
+            echo ${backend_ip} >> ./inventory.txt
+            cat inventory.txt
+            echo Backend IP: $backend_ip
+            ansible-playbook -i inventory.txt configure-server.yml --extra-vars "backend_ip=$backend_ip"
+#      - destroy-environment
 
-  run-migrations:
+
+  run-migrations: 
     docker:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build] 
-      
       - run:
           name: npm install
           working_directory: ./backend
           command: npm install
-
       - run:
           name: install dependencies
           command: |
             npm install typescript
-            npm --update install python3 npm     
-      
+            npm --update install python3 npm
       - run:
           name: Run migrations          
           no_output_timeout: 10m
@@ -269,7 +254,6 @@ jobs:
             cd backend
             npm run migrations >> migration_output.txt
             cat migration_output.txt
-      
       - run:
           name: Send migration results to memstash
           working_directory: ./backend          
@@ -282,7 +266,8 @@ jobs:
               echo "Migration failed"
               curl -H "Content-Type: text/plain" -H "token: da647fff-0676-4705-a4fd-bda47a1e6aaa" --request PUT --data "failure" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
             fi
-     # Here's where you will add some code to rollback on failure      
+#      - destroy-environment
+#      - revert-migrations
 
 #   deploy-frontend:
 #     docker:
@@ -395,9 +380,6 @@ workflows:
            requires: [build-frontend]
        - deploy-infrastructure:
            requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-           filters:
-              branches:
-                only: [master]
        - configure-infrastructure:
            requires: [deploy-infrastructure]
        - run-migrations:
