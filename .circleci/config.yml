@@ -232,7 +232,6 @@ jobs:
             ansible-playbook -i inventory.txt configure-server.yml --extra-vars "backend_ip=$backend_ip"
 #      - destroy-environment
 
-
   run-migrations: 
     docker:
       - image: circleci/node:13.8.0
@@ -252,6 +251,7 @@ jobs:
           no_output_timeout: 10m
           command: |
             cd backend
+            npm run migrations:revert
             npm run migrations >> migration_output.txt
             cat migration_output.txt
       - run:
